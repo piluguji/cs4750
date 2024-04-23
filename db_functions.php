@@ -14,20 +14,17 @@ function checkLogin($username, $password) {
     }
 }
 
-function signUp($username, $password, $height, $age, $weight) {
-    global $db;
-    
-    if(checkLogin($username, $password)){
-        return false;
-    }
+function addUser($username, $password){
+    global db;
     $query = "INSERT INTO User (username, password) VALUES (:username, :password)";
     $statement = $db->prepare($query);
     $statement->bindValue(':username', $username);
     $statement->bindValue(':password', $password);
     $result = $statement->execute();
     $statement->closeCursor();
+}
 
-    $userId = $db->lastInsertId();
+function addPersonalInfo($userId, $height, $weight, $age){
     $query = "INSERT INTO user_personal_info (height, weight, age, userID) VALUES (:height, :weight, :age, :user_id )";
     $statement = $db->prepare($query);
     $statement->bindValue(':user_id', $userId);
@@ -36,13 +33,17 @@ function signUp($username, $password, $height, $age, $weight) {
     $statement->bindValue(':age', $age);
     $result = $statement->execute();
     $statement->closeCursor();
+}
 
-    var_dump($result);
-    if($result) {
-        return true;
-    } else {
+function signUp($username, $password, $height, $age, $weight) {
+    global $db;
+    
+    if(checkLogin($username, $password)){
         return false;
     }
+    addUser($username, $password);
+    $userId = $db->lastInsertId();
+    addPersonalInfo($userId, $height, $weight, $age);
 }
 
 ?> 
