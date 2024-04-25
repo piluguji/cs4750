@@ -3,13 +3,14 @@ require("config/connect_db.php");
 require("db_functions.php");
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    var_dump($_POST);
     if (isset($_POST['login_button'])){
         $username = $_POST["username"];
         $password = $_POST["password"];
 
         $result = checkLogin($username, $password);
         if ($result) {
+            $_SESSION['userID'] = $result['userID']; // Assuming userID is returned from checkLogin function
+            $_SESSION['username'] = $username;
             header("Location: views/index.php");
             // Redirect or do further processing
         } else {
@@ -23,14 +24,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $height = $_POST["height"];
         $age = $_POST["age"];
 
-        $result = signUp($username, $password, $height, $age, $weight);
-        if ($result) {
-            header("Location: views/index.php");
-            // Redirect or do further processing
-        } else {
-            echo "Sign up failed";
-            // Handle failed sign up
-        }
+        signUp($username, $password, $height, $age, $weight);
+        header("Location: views/login.php");
     }
 }
 ?>

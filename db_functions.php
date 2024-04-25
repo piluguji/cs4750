@@ -1,21 +1,20 @@
 <?php
+require('config/connect_db.php');
+session_start();
 
 function checkLogin($username, $password) {
     global $db;   
-    $query = "SELECT * FROM User WHERE username='$username' AND password='$password'";
+    $query = "SELECT userID FROM User WHERE username='$username' AND password='$password'";
     $statement = $db->prepare($query);
     $statement->execute();
     $result = $statement->fetch();
     $statement->closeCursor();
-    if($result) {
-        return true;
-    } else {
-        return false;
-    }
+    
+    return $result;
 }
 
 function addUser($username, $password){
-    global db;
+    global $db;
     $query = "INSERT INTO User (username, password) VALUES (:username, :password)";
     $statement = $db->prepare($query);
     $statement->bindValue(':username', $username);
@@ -44,6 +43,17 @@ function signUp($username, $password, $height, $age, $weight) {
     addUser($username, $password);
     $userId = $db->lastInsertId();
     addPersonalInfo($userId, $height, $weight, $age);
+}
+
+function getSessions($userId){
+    global $db;
+    $query = "SELECT * FROM workout_session WHERE userID = :user_id ORDER BY date DESC"; // Assuming 'date' is the column containing the date
+    $statement = $db->prepare($query);
+    $statement->bindValue(':user_id', $userId);
+    $statement->execute();
+    $result = $statement->fetchAll();
+    $statement->closeCursor();
+    return $result;
 }
 
 ?> 
