@@ -63,6 +63,8 @@ function addUser($username, $password){
 }
 
 function addPersonalInfo($userId, $height, $weight, $age){
+    global $db;
+
     $query = "INSERT INTO user_personal_info (height, weight, age, userID) VALUES (:height, :weight, :age, :user_id )";
     $statement = $db->prepare($query);
     $statement->bindValue(':user_id', $userId);

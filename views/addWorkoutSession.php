@@ -122,7 +122,7 @@ document.addEventListener("DOMContentLoaded", function() {
     inputWeight.type = "number";
     inputWeight.name = "weight[" + exerciseCounter + "]";
     inputWeight.classList.add("form-control", "mb-2");
-    inputWeight.placeholder = "Weight (lbs or kg)";
+    inputWeight.placeholder = "Weight (lbs)";
     exerciseDiv.appendChild(inputWeight);
 
     // Add a dropdown to select if the exercise should be a favorite
