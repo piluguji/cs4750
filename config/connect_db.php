@@ -34,19 +34,19 @@
 ////////////////////////////////////////////
 
 /** S24, PHP (on GCP, local XAMPP, or CS server) connect to MySQL (on local XAMPP) **/
-$username = 'testing';
-$password = 'abc';
-$host = 'localhost:3306';           // default phpMyAdmin port = 3306
-$dbname = 'workout_db';
-$dsn = "mysql:host=$host;dbname=$dbname";  
+// $username = 'testing';
+// $password = 'abc';
+// $host = 'localhost:3306';           // default phpMyAdmin port = 3306
+// $dbname = 'workout_db';
+// $dsn = "mysql:host=$host;dbname=$dbname";  
 ////////////////////////////////////////////
 
 /** S24, PHP (on GCP, local XAMPP, or CS server) connect to MySQL (on CS server) **/
-// $username = 'your-computingID'; 
-// $password = 'your-mysql-password';
-// $host = 'mysql01.cs.virginia.edu';
-// $dbname = 'your-computingID';
-// $dsn = "mysql:host=$host;dbname=$dbname";
+$username = 'knc8xp';
+$password = 'Spring2024';
+$host = 'mysql01.cs.virginia.edu';
+$dbname = 'knc8xp';
+$dsn = "mysql:host=$host;dbname=$dbname";
 ////////////////////////////////////////////
 
 // To find a hostname, access phpMyAdmin

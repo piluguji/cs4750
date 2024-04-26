@@ -70,7 +70,7 @@ function createSession($date, $duration){
 
 function fetch_exercises(){
     global $db;
-    $query = "SELECT ID, Title FROM exercise"; // Remove the limit 1 to fetch all exercises
+    $query = "SELECT ID, Title FROM Exercise"; // Remove the limit 1 to fetch all exercises
     $statement = $db->prepare($query);
     $statement->execute();
     $result = $statement->fetchAll(PDO::FETCH_ASSOC); // Specify fetching as associative array
