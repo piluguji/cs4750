@@ -1,7 +1,42 @@
 <?php
 require("config/connect_db.php");
 require("db_functions.php");
+// session_start();
+if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+    // Check if the form for adding to favorites was submitted.
+    if (isset($_POST['exerciseID'])) {
+        // The user's ID should be in the session from when they logged in.
+        $userID = $_SESSION['userID'];
+        $exerciseID = $_POST['exerciseID'];
 
+        // Call the function to add the favorite.
+        $result = add_to_favorites($userID, $exerciseID);
+
+        // Based on the result, you can redirect or output a message.
+        if ($result) {
+            // Redirect back to the favorites page with a success message.
+            $_SESSION['message'] = 'Exercise added to favorites!';
+            header('Location: favorites.php');
+        } else {
+            // Redirect back or output an error message.
+            $_SESSION['error'] = 'Could not add the exercise to favorites.';
+            header('Location: favorites.php');
+        }
+        exit();
+    }
+}
+
+if (isset($_POST['remove_from_favorites'])) {
+    $userID = $_SESSION['userID'];
+    $exerciseID = $_POST['exerciseID'];
+    $result = remove_from_favorites($userID, $exerciseID);
+    if ($result) {
+        echo json_encode(['success' => true]);
+    } else {
+        // Handle error
+        echo json_encode(['error' => 'Could not remove from favorites']);
+    }
+}
 if (isset($_POST['submit_session_button'])) {
     $date = $_POST['date'];
     $duration = $_POST['duration'];
@@ -17,12 +52,32 @@ if (isset($_POST['submit_session_button'])) {
             $weight = $_POST['weight'][$index];
 
             create_exercise($sessionID, $exerciseID, $weight, $reps, $sets);
+            if ($_POST['favorite'][$index] == 'yes') {
+                add_to_favorites($_SESSION['userID'], $exerciseID);
+            }
+            else {
+                // Optionally remove from favorites if it's already there
+                remove_from_favorites($_SESSION['userID'], $exerciseID);
+            }
         }
     }
 
     // Redirect or show a success message
     header('Location: views/viewWorkoutSessions.php');
     exit();
+}
+
+
+// You'll need to create this function to fetch the exercise name based on its ID
+function fetch_exercise_name_by_id($exerciseID) {
+    global $db;
+    $query = "SELECT Title FROM Exercise WHERE ID = :exercise_id";
+    $statement = $db->prepare($query);
+    $statement->bindValue(':exercise_id', $exerciseID);
+    $statement->execute();
+    $exercise = $statement->fetch(PDO::FETCH_ASSOC);
+    $statement->closeCursor();
+    return $exercise['Title'];
 }
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
@@ -50,4 +105,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         var_dump($_POST);
     }
 }
+
+
 ?>

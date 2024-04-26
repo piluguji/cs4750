@@ -22,6 +22,7 @@ if (session_status() == PHP_SESSION_NONE) {
     <div class="col-12">
       <?php if(isset($_SESSION['userID'])): ?>
         <!-- User is logged in, show Sign out and Add Exercise -->
+        <a href="favorites.php" class="btn btn-info btn-lg mr-2">View Favorite Exercises</a>
         <a href="addWorkoutSession.php" class="btn btn-info btn-lg mr-2">Add Workout Session</a>
         <a href="viewWorkoutSessions.php" class="btn btn-info btn-lg mr-2">View Workout Sessions</a>
 

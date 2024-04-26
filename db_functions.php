@@ -136,5 +136,44 @@ function create_exercise($session_id, $exerciseID, $weight, $reps, $sets){
     return $result;
 }
 
+// Fetch the list of user's favorite exercises
+function fetch_favorites($userID){
+    global $db;
+    $query = "SELECT f.exerciseID, e.Title as name
+              FROM favorites f
+              JOIN Exercise e ON f.exerciseID = e.ID
+              WHERE f.userID = :user_id";
+    $statement = $db->prepare($query);
+    $statement->bindValue(':user_id', $userID);
+    $statement->execute();
+    $favorites = $statement->fetchAll(PDO::FETCH_ASSOC);
+    $statement->closeCursor();
+    return $favorites;
+}
+
+// Add an exercise to the user's favorites
+function add_to_favorites($userID, $exerciseID) {
+    global $db;
+    $query = "INSERT INTO favorites (userID, exerciseID) VALUES (:user_id, :exercise_id)";
+    $statement = $db->prepare($query);
+    $statement->bindValue(':user_id', $userID);
+    $statement->bindValue(':exercise_id', $exerciseID);
+    $result = $statement->execute();
+    $statement->closeCursor();
+    return $result;
+}
+
+// Remove an exercise from the user's favorites
+function remove_from_favorites($userID, $exerciseID){
+    global $db;
+    $query = "DELETE FROM favorites WHERE userID = :user_id AND exerciseID = :exercise_id";
+    $statement = $db->prepare($query);
+    $statement->bindValue(':user_id', $userID);
+    $statement->bindValue(':exercise_id', $exerciseID);
+    $result = $statement->execute();
+    $statement->closeCursor();
+    return $result;
+}
+?>
 
 ?> 
