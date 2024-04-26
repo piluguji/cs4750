@@ -26,6 +26,21 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
         signUp($username, $password, $height, $age, $weight);
         header("Location: views/login.php");
+    }else if(isset($_POST['submit_session_button'])){
+        var_dump($_POST);
+        $session_id = createSession($_POST['date'], $_POST['duration']);
+        for($i = 1; $i <= count($_POST['exercise']); $i++) {
+            $exerciseID = $_POST['exercise'][$i];
+            $weight = $_POST['weight'][$i];
+            $reps = $_POST['reps'][$i];
+            $sets = $_POST['sets'][$i];
+
+            create_exercise($session_id, $exerciseID, $weight, $reps, $sets);
+        }
+    }else{
+        echo "Invalid request";
+        var_dump($_POST);
+
     }
 }
 ?>
