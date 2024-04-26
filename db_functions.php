@@ -1,7 +1,28 @@
 <?php
 require('config/connect_db.php');
-session_start();
+if (session_status() == PHP_SESSION_NONE) {
+    session_start();
+}
+function deleteSession($sessionID, $userID) {
+    global $db;
+    
+    // Delete session from workout_session table
+    $query = "DELETE FROM workout_session WHERE sessionID = :session_id AND userID = :user_id";
+    $statement = $db->prepare($query);
+    $statement->bindValue(':session_id', $sessionID);
+    $statement->bindValue(':user_id', $userID);
+    $result = $statement->execute();
+    $statement->closeCursor();
 
+    // Delete associated exercise instances
+    $query = "DELETE FROM exercise_instance WHERE sessionID = :session_id";
+    $statement = $db->prepare($query);
+    $statement->bindValue(':session_id', $sessionID);
+    $result = $statement->execute();
+    $statement->closeCursor();
+
+    return $result;
+}
 function checkLogin($username, $password) {
     global $db;   
     $query = "SELECT userID FROM User WHERE username='$username' AND password='$password'";
@@ -11,6 +32,24 @@ function checkLogin($username, $password) {
     $statement->closeCursor();
     
     return $result;
+}
+function getExercisesForSession($sessionID, $userID)
+{
+    global $db;
+    $query = "SELECT e.Title, ei.sets, ei.reps, ei.weight
+              FROM exercise_instance ei
+              JOIN Exercise e ON ei.exerciseID = e.ID
+              JOIN workout_session ws ON ei.sessionID = ws.sessionID
+              WHERE ws.sessionID = :session_id AND ws.userID = :user_id";
+
+    $statement = $db->prepare($query);
+    $statement->bindValue(':session_id', $sessionID, PDO::PARAM_INT);
+    $statement->bindValue(':user_id', $userID, PDO::PARAM_INT);
+    $statement->execute();
+    $exercises = $statement->fetchAll(PDO::FETCH_ASSOC);
+    $statement->closeCursor();
+
+    return $exercises;
 }
 
 function addUser($username, $password){
