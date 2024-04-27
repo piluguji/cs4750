@@ -87,8 +87,8 @@ if (isset($_POST['delete_session'])) {
       <li class="list-group-item">
         <form method="POST">
           <button type="submit" name="delete_session" class="btn btn-sm btn-danger delete-button">Delete</button>
-          <a href="addFeedback.php" class="btn btn-sm btn-primary" style="color: white; background-color: blue;">Add Feedback</a>
-          <a href="viewFeedback.php" class="btn btn-sm btn-primary" style="color: white; background-color: green;">View Feedback</a>
+          <a href="addFeedback.php?sessionID=<?= htmlspecialchars($session['sessionID']) ?>" class="btn btn-sm btn-primary" style="color: white; background-color: blue;">Add Feedback</a>
+          <a href="viewFeedback.php?sessionID=<?= htmlspecialchars($session['sessionID']) ?>" class="btn btn-sm btn-primary" style="color: white; background-color: green;">View Feedback</a>
           <input type="hidden" name="sessionID" value="<?= $session['sessionID'] ?>">
         </form>
         <a href="sessionDetails.php?sessionID=<?= htmlspecialchars($session['sessionID']) ?>">

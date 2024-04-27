@@ -9,7 +9,7 @@ if (!isset($_SESSION['userID'])) {
   exit();
 }
 
-$sessionID = $_GET['sessionID'] ?? null; // Safe way to get sessionID
+$sessionID = $_GET['sessionID']; 
 
 ?>
 
@@ -47,7 +47,7 @@ $sessionID = $_GET['sessionID'] ?? null; // Safe way to get sessionID
       <h3 class="text-center mb-4">Add Feedback</h3>
       <?php
       $errors = [];
-      if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+      if ($_SERVER['REQUEST_METHOD'] === 'POST' && $sessionID) {
           $satisfaction = $_POST['rating'] ?? 0;
           $difficulty = $_POST['difficulty'] ?? '';
 
@@ -58,15 +58,19 @@ $sessionID = $_GET['sessionID'] ?? null; // Safe way to get sessionID
               $errors[] = 'Difficulty field is required.';
           }
 
-          if (empty($errors)) {
-              // Assume addFeedback is a function that inserts data into the database
-              if (addFeedback($sessionID, $satisfaction, $difficulty)) {
-                  header('Location: viewWorkoutSessions.php');
-                  exit();
-              } else {
-                  $errors[] = 'Failed to add feedback. Please try again.';
-              }
-          }
+          if (empty($errors) && isset($sessionID)) {
+            // Add feedback to the database
+            if (addFeedback($sessionID, $satisfaction, $difficulty)) {
+                // Redirect on successful insertion
+                header('Location: viewWorkoutSessions.php');
+                exit();
+            } else {
+                // Handle insertion error
+                $errors[] = 'Failed to add feedback. Please try again.';
+            }
+        } elseif (!isset($sessionID)) {
+            $errors[] = 'Session ID is required.';
+        }
       }
       ?>
 

@@ -178,27 +178,26 @@ function remove_from_favorites($userID, $exerciseID){
 }
 function addFeedback($session_id, $satisfaction, $difficulty) {
     global $db;
-    $query = "INSERT INTO workout_feedback (satisfaction, difficulty) VALUES (:satisfaction, :difficulty)";
+    $query = "INSERT INTO workout_feedback (sessionID, satisfaction, difficulty) VALUES (:session_id, :satisfaction, :difficulty)";
     $statement = $db->prepare($query);
-    $statement->bindValue(':difficulty', $difficulty);
-    $statement->bindValue(':satisfaction', $satisfaction);
     $statement->bindValue(':session_id', $session_id);
+    $statement->bindValue(':satisfaction', $satisfaction);
+    $statement->bindValue(':difficulty', $difficulty);
     $result = $statement->execute();
     $statement->closeCursor();
     return $result;
 }
 
-//fetch the feedback from the database that is speicifc to the session they click on 
-function fetchFeedback($sessionID){
+
+function getFeedback($sessionID) {
     global $db;
-    $query = "SELECT difficulty, satisfaction FROM workout_feedback WHERE sessionID = :session_id";
+    $query = "SELECT satisfaction, difficulty FROM workout_feedback WHERE sessionID = :session_id";
     $statement = $db->prepare($query);
     $statement->bindValue(':session_id', $sessionID);
     $statement->execute();
-    $result = $statement->fetchAll();
-    $statement->closeCursor();
-    return $result;
+    return $statement->fetchAll();
 }
+
 
 
 function createNutrition($protein_goal, $calorie_goal, $date, $user_id){
