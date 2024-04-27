@@ -58,7 +58,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
   <div class="container mt-4">
     <div class="text-center mb-4">
       <a href="index.php" class="btn btn-secondary btn-home">Home</a>
-      <a href="viewNutritionGoals.php" class="btn btn-info">View Nutrition Goals</a>
+      <a href="viewNutrition.php" class="btn btn-info">View Nutrition Goals</a>
     </div>
     <div class="form-container">
       <h3 class="text-center mb-4">Add Daily Nutrition Goals</h3>

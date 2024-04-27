@@ -218,7 +218,7 @@ function createNutrition($protein_goal, $calorie_goal, $date, $user_id){
 
 function getNutritionGoals($userID) {
     global $db;
-    $query = "SELECT * FROM Nutrition WHERE userID = :user_id ORDER BY date DESC";
+    $query = "SELECT protein_goal, calorie_goal, `Date` as date_set FROM Nutrition WHERE userID = :user_id ORDER BY `Date` DESC";
     $statement = $db->prepare($query);
     $statement->bindValue(':user_id', $userID);
     $statement->execute();
@@ -226,6 +226,7 @@ function getNutritionGoals($userID) {
     $statement->closeCursor();
     return $goals;
 }
+
 
 
 ?>

@@ -1,4 +1,4 @@
-<!-- <?php 
+<?php 
 require('../db_functions.php'); // Ensure this path is correct.
 if (session_status() == PHP_SESSION_NONE) {
     session_start();
@@ -46,24 +46,25 @@ $nutrition_goals = getNutritionGoals($_SESSION['userID']);
     <div class="table-container">
       <h3 class="text-center mb-4">Nutrition Goals</h3>
       <table class="table">
-        <thead>
-          <tr>
-            <th scope="col">#</th>
-            <th scope="col">Protein Goal (g)</th>
-            <th scope="col">Calorie Goal</th>
-            <th scope="col">Date Set</th>
-          </tr>
-        </thead>
-        <tbody>
-          <?php foreach ($nutrition_goals as $index => $goal): ?>
-            <tr>
-              <th scope="row"><?php echo $index + 1; ?></th>
-              <td><?php echo htmlspecialchars($goal['protein_goal']); ?></td>
-              <td><?php echo htmlspecialchars($goal['calorie_goal']); ?></td>
-              <td><?php echo htmlspecialchars($goal['date_set']); // Assumes you have a 'date_set' column ?></td>
-            </tr>
-          <?php endforeach; ?>
-        </tbody>
+      <thead>
+  <tr>
+    <th scope="col">#</th>
+    <th scope="col">Protein Goal (g)</th>
+    <th scope="col">Calorie Goal</th>
+    <th scope="col">Date Set</th> <!-- This header corresponds to the 'Date' column in your DB -->
+  </tr>
+</thead>
+<tbody>
+  <?php foreach ($nutrition_goals as $index => $goal): ?>
+    <tr>
+      <th scope="row"><?php echo $index + 1; ?></th>
+      <td><?php echo htmlspecialchars($goal['protein_goal']); ?></td>
+      <td><?php echo htmlspecialchars($goal['calorie_goal']); ?></td>
+      <td><?php echo htmlspecialchars($goal['date_set']); // Use 'date_set', which is the alias in your SELECT query ?></td>
+    </tr>
+  <?php endforeach; ?>
+</tbody>
+
       </table>
     </div>
   </div>
@@ -73,4 +74,4 @@ $nutrition_goals = getNutritionGoals($_SESSION['userID']);
   <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
   
 </body>
-</html> -->
+</html>
