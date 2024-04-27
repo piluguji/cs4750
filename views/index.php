@@ -24,8 +24,10 @@ if (session_status() == PHP_SESSION_NONE) {
         <!-- User is logged in, show Sign out and Add Exercise -->
         <a href="favorites.php" class="btn btn-info btn-lg mr-2">View Favorite Exercises</a>
         <a href="addWorkoutSession.php" class="btn btn-info btn-lg mr-2">Add Workout Session</a>
+        <a href="addNutrition.php" class="btn btn-info btn-lg mr-2">Add Nutrition</a>
+        <a href="viewNutrition.php" class="btn btn-info btn-lg mr-2">View Nutrition</a>
         <a href="viewWorkoutSessions.php" class="btn btn-info btn-lg mr-2">View Workout Sessions</a>
-
+        <a href="viewFeedback.php" class="btn btn-info btn-lg mr-2">View Feedback</a>
         <a href="logout.php" class="btn btn-danger btn-lg">Sign Out</a>
       <?php else: ?>
         <!-- No user is logged in, show Login and Sign Up -->

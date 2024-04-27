@@ -176,6 +176,56 @@ function remove_from_favorites($userID, $exerciseID){
     $statement->closeCursor();
     return $result;
 }
-?>
+function addFeedback($session_id, $satisfaction, $difficulty) {
+    global $db;
+    $query = "INSERT INTO workout_feedback (satisfaction, difficulty) VALUES (:satisfaction, :difficulty)";
+    $statement = $db->prepare($query);
+    $statement->bindValue(':difficulty', $difficulty);
+    $statement->bindValue(':satisfaction', $satisfaction);
+    $statement->bindValue(':session_id', $session_id);
+    $result = $statement->execute();
+    $statement->closeCursor();
+    return $result;
+}
 
-?> 
+//fetch the feedback from the database that is speicifc to the session they click on 
+function fetchFeedback($sessionID){
+    global $db;
+    $query = "SELECT difficulty, satisfaction FROM workout_feedback WHERE sessionID = :session_id";
+    $statement = $db->prepare($query);
+    $statement->bindValue(':session_id', $sessionID);
+    $statement->execute();
+    $result = $statement->fetchAll();
+    $statement->closeCursor();
+    return $result;
+}
+
+
+function createNutrition($protein_goal, $calorie_goal, $date, $user_id){
+    global $db;
+    $query = "INSERT INTO Nutrition (protein_goal, calorie_goal, `Date`, userID) VALUES (:protein_goal, :calorie_goal, :Date, :user_id)";
+    $statement = $db->prepare($query);
+    $statement->bindValue(':protein_goal', $protein_goal);
+    $statement->bindValue(':calorie_goal', $calorie_goal);
+    $statement->bindValue(':Date', $date); // Ensure that this placeholder ':Date' matches the exact casing of your column name in the database
+    $statement->bindValue(':user_id', $user_id);
+    $result = $statement->execute();
+    $statement->closeCursor();
+    return $db->lastInsertId();
+}
+
+
+
+function getNutritionGoals($userID) {
+    global $db;
+    $query = "SELECT * FROM Nutrition WHERE userID = :user_id ORDER BY date DESC";
+    $statement = $db->prepare($query);
+    $statement->bindValue(':user_id', $userID);
+    $statement->execute();
+    $goals = $statement->fetchAll();
+    $statement->closeCursor();
+    return $goals;
+}
+
+
+?>
