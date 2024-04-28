@@ -57,7 +57,7 @@ function getExercisesForSession($sessionID, $userID)
     return $exercises;
 }
 
-function addUser($username, $password){
+function addUser($username, $hashed_password){
     global $db;
     $query = "INSERT INTO User (username, password) VALUES (:username, :password)";
     $statement = $db->prepare($query);
