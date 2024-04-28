@@ -1,7 +1,7 @@
 <?php
 require("config/connect_db.php");
 require("db_functions.php");
-// session_start();
+session_start();
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     // Check if the form for adding to favorites was submitted.
     if (isset($_POST['exerciseID'])) {
@@ -89,6 +89,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $_SESSION['userID'] = $result['userID']; // Assuming userID is returned from checkLogin function
             $_SESSION['username'] = $username;
             header("Location: views/index.php"); // Redirect or do further processing
+            exit();
         } else {
             echo "Login failed"; // Handle failed login
         }
