@@ -38,5 +38,3 @@ require('../config/connect_db.php');
 
 </body>
 </html>
-
-

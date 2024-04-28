@@ -25,18 +25,13 @@ function deleteSession($sessionID, $userID) {
 }
 function checkLogin($username, $password) {
     global $db;   
-    $query = "SELECT userID, password FROM User WHERE username = :username";
+    $query = "SELECT userID FROM User WHERE username='$username' AND password='$password'";
     $statement = $db->prepare($query);
-    $statement->bindValue(':username', $username);
     $statement->execute();
-    $user = $statement->fetch(PDO::FETCH_ASSOC);
+    $result = $statement->fetch();
     $statement->closeCursor();
-
-    // Now we verify the password
-    if ($user && password_verify($password, $user['password'])) {
-        return $user['userID']; // Return user ID or another unique identifier
-    }
-    return false;
+    
+    return $result;
 }
 function getExercisesForSession($sessionID, $userID)
 {
@@ -57,12 +52,12 @@ function getExercisesForSession($sessionID, $userID)
     return $exercises;
 }
 
-function addUser($username, $hashed_password){
+function addUser($username, $password){
     global $db;
     $query = "INSERT INTO User (username, password) VALUES (:username, :password)";
     $statement = $db->prepare($query);
     $statement->bindValue(':username', $username);
-    $statement->bindValue(':password', $hashed_password);
+    $statement->bindValue(':password', $password);
     $result = $statement->execute();
     $statement->closeCursor();
 }
@@ -83,20 +78,10 @@ function addPersonalInfo($userId, $height, $weight, $age){
 function signUp($username, $password, $height, $age, $weight) {
     global $db;
     
-    $query = "SELECT username FROM User WHERE username = :username";
-    $statement = $db->prepare($query);
-    $statement->bindValue(':username', $username);
-    $statement->execute();
-    $existingUser = $statement->fetch(PDO::FETCH_ASSOC);
-    $statement->closeCursor();
-    
-    if ($existingUser) {
-        return false; // Username already exists
+    if(checkLogin($username, $password)){
+        return false;
     }
-
-    // If username does not exist, add the user
-    $hashed_password = password_hash($password, PASSWORD_DEFAULT);
-    addUser($username, $hashed_password);
+    addUser($username, $password);
     $userId = $db->lastInsertId();
     addPersonalInfo($userId, $height, $weight, $age);
 }
