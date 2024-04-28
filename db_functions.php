@@ -25,13 +25,18 @@ function deleteSession($sessionID, $userID) {
 }
 function checkLogin($username, $password) {
     global $db;   
-    $query = "SELECT userID FROM User WHERE username='$username' AND password='$password'";
+    $query = "SELECT userID, password FROM User WHERE username = :username";
     $statement = $db->prepare($query);
+    $statement->bindValue(':username', $username);
     $statement->execute();
-    $result = $statement->fetch();
+    $user = $statement->fetch(PDO::FETCH_ASSOC);
     $statement->closeCursor();
-    
-    return $result;
+
+    // Now we verify the password
+    if ($user && password_verify($password, $user['password'])) {
+        return $user['userID']; // Return user ID or another unique identifier
+    }
+    return false;
 }
 function getExercisesForSession($sessionID, $userID)
 {

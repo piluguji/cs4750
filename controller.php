@@ -106,5 +106,41 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     }
 }
 
+if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+    if (isset($_POST['signUp_button'])) {
+        $username = $_POST["username"];
+        $password = password_hash($_POST["password"], PASSWORD_DEFAULT); // Hashing the password
+        $height = $_POST["height"];
+        $weight = $_POST["weight"];
+        $age = $_POST["age"];
+        signUp($username, $password, $height, $age, $weight); // Adjust the signUp function to handle the hashed password
+        header("Location: views/login.php");
+    }
+    // Other POST handlers remain unchanged
+}
+
+function signUp($username, $password, $height, $age, $weight) {
+    global $db;
+    
+    // Check if the user already exists
+    if(checkLogin($username, $password)){
+        return false;
+    }
+    addUser($username, $password); // $password is already hashed
+    $userId = $db->lastInsertId();
+    addPersonalInfo($userId, $height, $weight, $age);
+}
+
+function addUser($username, $hashed_password){
+    global $db;
+    $query = "INSERT INTO User (username, password) VALUES (:username, :password)";
+    $statement = $db->prepare($query);
+    $statement->bindValue(':username', $username);
+    $statement->bindValue(':password', $hashed_password);
+    $result = $statement->execute();
+    $statement->closeCursor();
+}
+
+
 
 ?>
