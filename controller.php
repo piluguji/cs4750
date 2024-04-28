@@ -131,16 +131,6 @@ function signUp($username, $password, $height, $age, $weight) {
     addPersonalInfo($userId, $height, $weight, $age);
 }
 
-function addUser($username, $hashed_password){
-    global $db;
-    $query = "INSERT INTO User (username, password) VALUES (:username, :password)";
-    $statement = $db->prepare($query);
-    $statement->bindValue(':username', $username);
-    $statement->bindValue(':password', $hashed_password);
-    $result = $statement->execute();
-    $statement->closeCursor();
-}
-
 
 
 ?>
