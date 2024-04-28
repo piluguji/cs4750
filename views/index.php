@@ -28,7 +28,7 @@ if (session_status() == PHP_SESSION_NONE) {
         <a href="viewNutrition.php" class="btn btn-info btn-lg mr-2">View Nutrition</a>
         <a href="viewWorkoutSessions.php" class="btn btn-info btn-lg mr-2">View Workout Sessions</a>
         <a href="viewWorkoutSessions.php" class="btn btn-info btn-lg mr-2">Add Feedback</a>
-        <a href="viewFviewWorkoutSessionseedback.php" class="btn btn-info btn-lg mr-2">View Feedback</a>
+        <a href="viewWorkoutSessions.php" class="btn btn-info btn-lg mr-2">View Feedback</a>
         <a href="logout.php" class="btn btn-danger btn-lg">Sign Out</a>
       <?php else: ?>
         <!-- No user is logged in, show Login and Sign Up -->
