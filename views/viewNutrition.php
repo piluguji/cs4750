@@ -9,7 +9,7 @@ if (!isset($_SESSION['userID'])) {
     exit();
 }
 
-// Fetch nutrition goals from the database
+
 $nutrition_goals = getNutritionGoals($_SESSION['userID']);
 ?>
 

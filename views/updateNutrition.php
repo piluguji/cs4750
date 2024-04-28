@@ -21,6 +21,7 @@ $error = '';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $protein_goal = $_POST['protein_goal'];
+    
     $calorie_goal = $_POST['calorie_goal'];
     $date = $_POST['date']; 
     
