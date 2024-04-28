@@ -119,17 +119,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     // Other POST handlers remain unchanged
 }
 
-function signUp($username, $password, $height, $age, $weight) {
-    global $db;
-    
-    // Check if the user already exists
-    if(checkLogin($username, $password)){
-        return false;
-    }
-    addUser($username, $password); // $password is already hashed
-    $userId = $db->lastInsertId();
-    addPersonalInfo($userId, $height, $weight, $age);
-}
 
 
 
