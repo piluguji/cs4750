@@ -62,7 +62,7 @@ function addUser($username, $password){
     $query = "INSERT INTO User (username, password) VALUES (:username, :password)";
     $statement = $db->prepare($query);
     $statement->bindValue(':username', $username);
-    $statement->bindValue(':password', $password);
+    $statement->bindValue(':password', $hashed_password);
     $result = $statement->execute();
     $statement->closeCursor();
 }
@@ -83,10 +83,20 @@ function addPersonalInfo($userId, $height, $weight, $age){
 function signUp($username, $password, $height, $age, $weight) {
     global $db;
     
-    if(checkLogin($username, $password)){
-        return false;
+    $query = "SELECT username FROM User WHERE username = :username";
+    $statement = $db->prepare($query);
+    $statement->bindValue(':username', $username);
+    $statement->execute();
+    $existingUser = $statement->fetch(PDO::FETCH_ASSOC);
+    $statement->closeCursor();
+    
+    if ($existingUser) {
+        return false; // Username already exists
     }
-    addUser($username, $password);
+
+    // If username does not exist, add the user
+    $hashed_password = password_hash($password, PASSWORD_DEFAULT);
+    addUser($username, $hashed_password);
     $userId = $db->lastInsertId();
     addPersonalInfo($userId, $height, $weight, $age);
 }
