@@ -1,5 +1,5 @@
 <?php 
-require('../db_functions.php'); // Ensure this path is correct.
+require('../db_functions.php'); 
 if (session_status() == PHP_SESSION_NONE) {
     session_start();
 }
@@ -51,18 +51,23 @@ $nutrition_goals = getNutritionGoals($_SESSION['userID']);
     <th scope="col">#</th>
     <th scope="col">Protein Goal (g)</th>
     <th scope="col">Calorie Goal</th>
-    <th scope="col">Date Set</th> <!-- This header corresponds to the 'Date' column in your DB -->
+    <th scope="col">Date</th> 
   </tr>
 </thead>
 <tbody>
-  <?php foreach ($nutrition_goals as $index => $goal): ?>
+<?php foreach ($nutrition_goals as $index => $goal): ?>
     <tr>
-      <th scope="row"><?php echo $index + 1; ?></th>
-      <td><?php echo htmlspecialchars($goal['protein_goal']); ?></td>
-      <td><?php echo htmlspecialchars($goal['calorie_goal']); ?></td>
-      <td><?php echo htmlspecialchars($goal['date_set']); // Use 'date_set', which is the alias in your SELECT query ?></td>
+        <th scope="row"><?php echo $index + 1; ?></th>
+        <td><?php echo htmlspecialchars($goal['protein_goal']); ?></td>
+        <td><?php echo htmlspecialchars($goal['calorie_goal']); ?></td>
+        <td><?php echo htmlspecialchars($goal['date_set']); ?></td>
+        <td>
+            <a href="updateNutrition.php?nutritionID=<?= htmlspecialchars($goal['nutritionID']); ?>" class="btn btn-primary">Update</a>
+        </td>
     </tr>
-  <?php endforeach; ?>
+<?php endforeach; ?>
+
+
 </tbody>
 
       </table>

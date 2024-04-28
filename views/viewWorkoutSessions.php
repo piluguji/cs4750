@@ -10,14 +10,14 @@ if (!isset($_SESSION['userID'])) {
   exit();
 }
 
-// Fetch sessions to display
+
 $sessions = getSessions($_SESSION['userID']);
 
 
 if (isset($_POST['delete_session'])) {
-    $sessionID = $_POST['sessionID']; // Ensure correct parameter name
-    deleteSession($sessionID, $_SESSION['userID']); // Pass both sessionID and userID
-    // Redirect after session deletion
+    $sessionID = $_POST['sessionID']; 
+    deleteSession($sessionID, $_SESSION['userID']); 
+    
     header('Location: viewWorkoutSessions.php');
     exit();
 }
@@ -57,7 +57,7 @@ if (isset($_POST['delete_session'])) {
             margin-bottom: 10px;
             border-radius: 5px;
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-            position: relative; /* Add position relative */
+            position: relative; 
         }
         .list-group-item a {
             text-decoration: none;
@@ -103,7 +103,6 @@ if (isset($_POST['delete_session'])) {
   <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 
   <script>
-<!-- Include your footer here -->
 
 </body>
 </html>

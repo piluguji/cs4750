@@ -9,12 +9,10 @@ if (!isset($_SESSION['userID'])) {
     exit();
 }
 
-// Get the sessionID from the URL
+
 $sessionID = $_GET['sessionID'] ?? null;
 
 
-
-// Fetch feedback for the specific session
 $feedbacks = getFeedback($sessionID);
 ?>
 
@@ -45,6 +43,7 @@ $feedbacks = getFeedback($sessionID);
             <th scope="row"><?= $index + 1 ?></th>
             <td><?= htmlspecialchars($feedback['satisfaction']) ?></td>
             <td><?= htmlspecialchars($feedback['difficulty']) ?></td>
+
           </tr>
         <?php endforeach; ?>
       </tbody>

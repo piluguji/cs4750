@@ -206,7 +206,7 @@ function createNutrition($protein_goal, $calorie_goal, $date, $user_id){
     $statement = $db->prepare($query);
     $statement->bindValue(':protein_goal', $protein_goal);
     $statement->bindValue(':calorie_goal', $calorie_goal);
-    $statement->bindValue(':Date', $date); // Ensure that this placeholder ':Date' matches the exact casing of your column name in the database
+    $statement->bindValue(':Date', $date); 
     $statement->bindValue(':user_id', $user_id);
     $result = $statement->execute();
     $statement->closeCursor();
@@ -217,14 +217,47 @@ function createNutrition($protein_goal, $calorie_goal, $date, $user_id){
 
 function getNutritionGoals($userID) {
     global $db;
-    $query = "SELECT protein_goal, calorie_goal, `Date` as date_set FROM Nutrition WHERE userID = :user_id ORDER BY `Date` DESC";
+    $query = "SELECT nutritionID, protein_goal, calorie_goal, `Date` as date_set FROM Nutrition WHERE userID = :user_id ORDER BY `Date` DESC";
     $statement = $db->prepare($query);
-    $statement->bindValue(':user_id', $userID);
+    $statement->bindValue(':user_id', $userID, PDO::PARAM_INT);
     $statement->execute();
-    $goals = $statement->fetchAll();
-    $statement->closeCursor();
-    return $goals;
+    return $statement->fetchAll(PDO::FETCH_ASSOC);
 }
+
+
+
+
+function getNutritionByID($nutritionID) {
+    global $db;
+    $query = "SELECT nutritionID, protein_goal, calorie_goal, `Date` as date_set FROM Nutrition WHERE nutritionID = :nutritionID";
+    $statement = $db->prepare($query);
+    $statement->bindValue(':nutritionID', $nutritionID, PDO::PARAM_INT);
+    $statement->execute();
+    return $statement->fetch(PDO::FETCH_ASSOC); 
+}
+
+
+
+function updateNutrition($nutritionID, $protein_goal, $calorie_goal, $date, $userID) {
+    global $db;
+    try {
+        $query = "UPDATE Nutrition SET protein_goal = :protein_goal, calorie_goal = :calorie_goal, Date = :date WHERE nutritionID = :nutritionID AND userID = :userID";
+        $statement = $db->prepare($query);
+        $statement->bindValue(':protein_goal', $protein_goal);
+        $statement->bindValue(':calorie_goal', $calorie_goal);
+        $statement->bindValue(':date', $date);
+        $statement->bindValue(':nutritionID', $nutritionID);
+        $statement->bindValue(':userID', $userID);
+        $result = $statement->execute();
+        $statement->closeCursor();
+        return $result;
+    } catch (PDOException $e) {
+        error_log("Update Nutrition Error: " . $e->getMessage());
+        return false;
+    }
+}
+
+
 
 
 
