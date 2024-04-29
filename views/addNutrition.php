@@ -5,7 +5,7 @@ if (session_status() == PHP_SESSION_NONE) {
 }
 
 if (!isset($_SESSION['userID'])) {
-    header('Location: login.php');
+    header('Location: index.php');
     exit();
 }
 
@@ -20,16 +20,14 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     // Assuming you have a session variable called 'userID' where the user's ID is stored.
     $user_id = $_SESSION['userID'];
 
-    // Call the function to insert the goals into the database.
-    $error_message = createNutrition($protein_goal, $calorie_goal, $date, $user_id);
-    if ($error_message) {
-        // Display the error message as a toast
-        echo "<script>alert('$error_message');</script>";
-    }else{
-      header('Location: index.php');
-      exit();
+    $result = createNutrition($protein_goal, $calorie_goal, $date, $user_id);
+    if ($result !== TRUE) {
+        echo "<script>alert('Error: $result');</script>";  // Only show the alert if there's an error message
+    } else {
+        header('Location: index.php');
+        exit();
     }
-    // After inserting the data, redirect to the home page.
+    
     
 }
 ?>
@@ -39,7 +37,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Add Nutrition Goals - YourAppName</title>
+  <title>Add Nutrition Goals</title>
   <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
   <style>
     body {
