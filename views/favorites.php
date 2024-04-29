@@ -11,7 +11,7 @@ if (!isset($_SESSION['userID'])) {
   exit();
 }
 
-// Fetch the user's favorite exercises
+
 $favorites = fetch_favorites($_SESSION['userID']);
 
 

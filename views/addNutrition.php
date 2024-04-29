@@ -1,5 +1,5 @@
 <?php 
-require('../db_functions.php'); // Ensure this path is correct.
+require('../db_functions.php'); 
 if (session_status() == PHP_SESSION_NONE) {
     session_start();
 }
@@ -9,20 +9,18 @@ if (!isset($_SESSION['userID'])) {
     exit();
 }
 
-// Handle form submission
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $protein_goal = filter_input(INPUT_POST, 'protein_goal', FILTER_VALIDATE_INT);
     $calorie_goal = filter_input(INPUT_POST, 'calorie_goal', FILTER_VALIDATE_INT);
-    $date = filter_input(INPUT_POST, 'date', FILTER_SANITIZE_STRING); // Note the lowercase 'date' here, it's the name of the form input field
+    $date = filter_input(INPUT_POST, 'date', FILTER_SANITIZE_STRING); 
 
 
 
-    // Assuming you have a session variable called 'userID' where the user's ID is stored.
     $user_id = $_SESSION['userID'];
 
     $result = createNutrition($protein_goal, $calorie_goal, $date, $user_id);
     if ($result !== TRUE) {
-        echo "<script>alert('Error: $result');</script>";  // Only show the alert if there's an error message
+        echo "<script>alert('Error: $result');</script>";  
     } else {
         header('Location: index.php');
         exit();

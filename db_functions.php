@@ -6,47 +6,43 @@ if (session_status() == PHP_SESSION_NONE) {
 function deleteSession($sessionID, $userID) {
     global $db;
 
-    // Begin transaction
     $db->beginTransaction();
 
     try {
-        // Delete records from 'provides' where 'feedbackID' is linked to the 'sessionID'
         $queryProvides = "DELETE FROM provides WHERE feedbackID IN 
                           (SELECT feedbackID FROM workout_feedback WHERE sessionID = :session_id)";
         $statementProvides = $db->prepare($queryProvides);
         $statementProvides->bindValue(':session_id', $sessionID);
         $statementProvides->execute();
 
-        // Delete records from 'progress' where 'feedbackID' is linked to the 'sessionID'
         $queryProgress = "DELETE FROM progress WHERE feedbackID IN 
                           (SELECT feedbackID FROM workout_feedback WHERE sessionID = :session_id)";
         $statementProgress = $db->prepare($queryProgress);
         $statementProgress->bindValue(':session_id', $sessionID);
         $statementProgress->execute();
 
-        // Delete feedback from the 'workout_feedback' table
         $queryFeedback = "DELETE FROM workout_feedback WHERE sessionID = :session_id";
         $statementFeedback = $db->prepare($queryFeedback);
         $statementFeedback->bindValue(':session_id', $sessionID);
         $statementFeedback->execute();
 
-        // Delete associated exercise instances
+        
         $queryExercises = "DELETE FROM exercise_instance WHERE sessionID = :session_id";
         $statementExercises = $db->prepare($queryExercises);
         $statementExercises->bindValue(':session_id', $sessionID);
         $statementExercises->execute();
 
-        // Finally, delete the session from 'workout_session'
+        
         $querySession = "DELETE FROM workout_session WHERE sessionID = :session_id AND userID = :user_id";
         $statementSession = $db->prepare($querySession);
         $statementSession->bindValue(':session_id', $sessionID);
         $statementSession->bindValue(':user_id', $userID);
         $statementSession->execute();
 
-        // Commit transaction
+
         $db->commit();
 
-        // Close all statement cursors
+        
         $statementProvides->closeCursor();
         $statementProgress->closeCursor();
         $statementFeedback->closeCursor();
@@ -55,10 +51,10 @@ function deleteSession($sessionID, $userID) {
 
         return true;
     } catch (PDOException $e) {
-        // Rollback transaction on error
+        
         $db->rollBack();
         error_log("Error in deleteSession: " . $e->getMessage());
-        return false; // or return the error message if you want to display it
+        return false; 
     }
 }
 
@@ -73,17 +69,17 @@ function checkLogin($username) {
 
 function signUp($username, $password, $height, $age, $weight) {
     global $db;
-    // Insert the user into the database
+   
     $query = "INSERT INTO User (username, password) VALUES (:username, :password)";
     $statement = $db->prepare($query);
     $statement->bindValue(':username', $username);
     $statement->bindValue(':password', $password);
     $statement->execute();
-    $userID = $db->lastInsertId(); // Get the last inserted ID
+    $userID = $db->lastInsertId(); 
     
-    // Insert personal info into the database
+    
     addPersonalInfo($userID, $height, $weight, $age);
-    return $userID; // Return the new user's ID
+    return $userID; 
 }
 
 function addPersonalInfo($userId, $height, $weight, $age){
@@ -168,16 +164,16 @@ function createSession($date, $duration){
 
 function fetch_exercises(){
     global $db;
-    $query = "SELECT ID, Title FROM Exercise ORDER BY Title ASC"; // Remove the limit 1 to fetch all exercises
+    $query = "SELECT ID, Title FROM Exercise ORDER BY Title ASC"; 
     $statement = $db->prepare($query);
     $statement->execute();
-    $result = $statement->fetchAll(PDO::FETCH_ASSOC); // Specify fetching as associative array
+    $result = $statement->fetchAll(PDO::FETCH_ASSOC); 
     $statement->closeCursor();
-    $exercises = array(); // Initialize an empty array to store tuples
+    $exercises = array(); 
     foreach ($result as $row) {
         // echo $row['ID'];
         // echo $row['Title'];
-        $exercises[] = array($row['ID'], $row['Title']); // Add each tuple to the array
+        $exercises[] = array($row['ID'], $row['Title']); 
     }
     return $exercises;
 }
@@ -206,7 +202,7 @@ function fetch_exercise_name_by_id($exerciseID) {
     return $exercise['Title'];
 }
 
-// Fetch the list of user's favorite exercises
+
 function fetch_favorites($userID){
     global $db;
     $query = "SELECT f.exerciseID, e.Title as name
@@ -221,24 +217,23 @@ function fetch_favorites($userID){
     return $favorites;
 }
 
-// Add an exercise to the user's favorites
+
 function add_to_favorites($userID, $exerciseID) {
     global $db;
     
-    // Check if the entry already exists
+    
     $checkQuery = "SELECT 1 FROM favorites WHERE userID = :user_id AND exerciseID = :exercise_id";
     $checkStmt = $db->prepare($checkQuery);
     $checkStmt->bindValue(':user_id', $userID);
     $checkStmt->bindValue(':exercise_id', $exerciseID);
     $checkStmt->execute();
 
-    // If the entry exists, fetch will return true
+
     if ($checkStmt->fetch()) {
-        // The exercise is already in favorites, so we just return without doing anything
-        return true; // You could also return false or some indicator that it already exists
+       
+        return true; 
     }
     
-    // If we get here, the entry doesn't exist, so we can safely insert it
     $query = "INSERT INTO favorites (userID, exerciseID) VALUES (:user_id, :exercise_id)";
     $statement = $db->prepare($query);
     $statement->bindValue(':user_id', $userID);
@@ -263,26 +258,24 @@ function remove_from_favorites($userID, $exerciseID){
 function inFavorites($userID, $exerciseID) {
     global $db;
 
-    // Prepare the SQL query to check if the exercise exists in the user's favorites
     $query = "SELECT COUNT(*) FROM favorites WHERE userID = :user_id AND exerciseID = :exercise_id";
 
-    // Prepare the statement
+ 
     $statement = $db->prepare($query);
 
-    // Bind the user ID and exercise ID parameters
+    
     $statement->bindValue(':user_id', $userID, PDO::PARAM_INT);
     $statement->bindValue(':exercise_id', $exerciseID, PDO::PARAM_INT);
 
-    // Execute the query
+    
     $statement->execute();
 
-    // Fetch the count result
+    
     $count = $statement->fetchColumn();
 
-    // Close the cursor to free up the statement
+    
     $statement->closeCursor();
 
-    // Return true if count is more than 0, meaning the exercise is a favorite
     return $count > 0;
 }
 
@@ -290,11 +283,11 @@ function inFavorites($userID, $exerciseID) {
 function addFeedback($sessionID, $rating, $comments) {
     global $db;
 
-    // Begin transaction
+
     $db->beginTransaction();
 
     try {
-        // Insert into workout_feedback
+
         $queryFeedback = "INSERT INTO workout_feedback (sessionID, rating, comments) VALUES (:sessionID, :rating, :comments)";
         $statementFeedback = $db->prepare($queryFeedback);
         $statementFeedback->bindValue(':sessionID', $sessionID);
@@ -302,27 +295,26 @@ function addFeedback($sessionID, $rating, $comments) {
         $statementFeedback->bindValue(':comments', $comments);
         $statementFeedback->execute();
 
-        // Get the last inserted feedback ID
+    
         $feedbackID = $db->lastInsertId();
 
 
-        // Insert into provides
+   
         $queryProvides = "INSERT INTO provides (feedbackID, userID) VALUES (:feedbackID, :userID)";
         $statementProvides = $db->prepare($queryProvides);
         $statementProvides->bindValue(':feedbackID', $feedbackID);
         $statementProvides->bindValue(':userID', $_SESSION['userID']);
         $statementProvides->execute();
 
-        // Commit transaction
+
         $db->commit();
 
-        // Close all statement cursors
+
         $statementFeedback->closeCursor();
         $statementProvides->closeCursor();
 
         return true;
     } catch (PDOException $e) {
-        // Rollback transaction on error
         $db->rollBack();
         error_log("Error in addFeedback: " . $e->getMessage());
         return false;

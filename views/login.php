@@ -1,11 +1,11 @@
 <?php
 require('../config/connect_db.php');
-// Start the session at the top to ensure it's available
+
 session_start();
 
-// Handle messages and errors
+
 $login_error = isset($_SESSION['login_error']) ? $_SESSION['login_error'] : '';
-unset($_SESSION['login_error']); // Clear the error after displaying it
+unset($_SESSION['login_error']); 
 ?>
 <!DOCTYPE html>
 <html lang="en">

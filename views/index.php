@@ -1,5 +1,5 @@
 <?php 
-// Start the session at the beginning of the script
+
 if (session_status() == PHP_SESSION_NONE) {
   session_start();
 }

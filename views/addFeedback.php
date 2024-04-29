@@ -59,15 +59,11 @@ $sessionID = $_GET['sessionID'];
           }
 
           if (empty($errors) && isset($sessionID)) {
-            // Add feedback to the database
-
-
+           
             if (addFeedback($sessionID, $rating, $comments)) {
-                // Redirect on successful insertion
                 header('Location: viewWorkoutSessions.php');
                 exit();
             } else {
-                // Handle insertion error
                 $errors[] = 'Failed to add feedback. Please try again.';
             }
         } elseif (!isset($sessionID)) {

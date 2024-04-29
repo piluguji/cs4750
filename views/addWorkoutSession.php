@@ -104,7 +104,7 @@ $exercises = json_encode(fetch_exercises());
             <input type="number" class="form-control" id="session-duration" name="duration" min="1" required>
         </div>
         <div id="exercises-container">
-            <!-- Dynamic Exercise fields will be added here -->
+            
         </div>
         <div class="text-center mb-3">
             <button type="button" class="btn btn-primary" id="add-exercise-btn">Add Exercise</button>
@@ -127,7 +127,7 @@ document.addEventListener("DOMContentLoaded", function() {
   function addExercise() {
     exerciseCounter++;
     const exercisesContainer = document.getElementById("exercises-container");
-    exerciseAdded = true; // Set flag to true when an exercise is added
+    exerciseAdded = true; 
 
     const exerciseDiv = document.createElement("div");
     exerciseDiv.classList.add("exercise-entry", "mb-3");
@@ -168,7 +168,7 @@ document.addEventListener("DOMContentLoaded", function() {
     inputWeight.placeholder = "Weight (kg)";
     exerciseDiv.appendChild(inputWeight);
 
-    // Add a dropdown to select if the exercise should be a favorite
+    
     const favoriteSelect = document.createElement("select");
     favoriteSelect.name = "favorite[" + exerciseCounter + "]";
     favoriteSelect.classList.add("form-control", "mb-2");
@@ -200,23 +200,22 @@ document.addEventListener("DOMContentLoaded", function() {
   }
 
     document.getElementById("add-exercise-btn").addEventListener("click", addExercise);
-    // Check if at least one exercise is added before submitting the form
-  // Before submitting the form, check if any exercise fields are filled without being added
+    
   document.getElementById('add-session-form').addEventListener('submit', function(event) {
-    // Check if at least one exercise has been added
+    
     if (exerciseCounter === 0) {
       alert("Please add at least one exercise to the workout session.");
-      event.preventDefault(); // Prevent the form from submitting
+      event.preventDefault(); 
       return;
     }
 
-    // Check each exercise entry for complete input fields
+   
     const exerciseEntries = document.querySelectorAll('.exercise-entry');
     for (let i = 0; i < exerciseEntries.length; i++) {
       const inputs = exerciseEntries[i].querySelectorAll('input');
       const selects = exerciseEntries[i].querySelectorAll('select');
       
-      // Check if any input or select within this exercise entry is empty
+     
       for (let input of inputs) {
         if (input.value === '') {
           alert("Please fill in all fields for each added exercise.");

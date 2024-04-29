@@ -9,7 +9,7 @@ if (!isset($_SESSION['userID'])) {
     exit();
 }
 
-// Check if the sessionID parameter is provided
+
 if (!isset($_GET['sessionID'])) {
     header('Location: viewSessions.php');
     exit();
@@ -17,7 +17,7 @@ if (!isset($_GET['sessionID'])) {
 
 $sessionID = $_GET['sessionID'];
 
-// Fetch the exercises for the selected session
+
 $exercises = getExercisesForSession($sessionID, $_SESSION['userID']);
 ?>
 <!DOCTYPE html>
@@ -28,7 +28,6 @@ $exercises = getExercisesForSession($sessionID, $_SESSION['userID']);
     <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
     <title>Session Details - XSplit</title>
     <style>
-        /* Add your custom styles here */
     </style>
 </head>
 <body>
