@@ -95,6 +95,9 @@ $sessionID = $_GET['sessionID'];
           </div>
           <div class="text-center">
               <button type="submit" class="btn btn-success">Submit Feedback</button>
+              <a href="viewWorkoutSessions.php" class="btn btn-info" role="button">Back</a>
+
+
           </div>
       </form>
     </div>

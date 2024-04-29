@@ -19,6 +19,50 @@ $exercises = json_encode(fetch_exercises());
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Add Workout Session - XSplit</title>
   <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+  <nav class="navbar navbar-expand-lg navbar-light bg-light">
+  <div class="container">
+    <a class="navbar-brand" href="index.php">XSplit</a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarNav">
+      <?php if(isset($_SESSION['userID'])): ?>
+        <ul class="navbar-nav mr-auto">
+          <li class="nav-item">
+            <a class="nav-link" href="favorites.php">Favorite Exercises</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="addWorkoutSession.php">Add Workout Session</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="addNutrition.php">Add Nutrition</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="viewNutrition.php">View Nutrition</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="viewWorkoutSessions.php">View Workout Sessions</a>
+          </li>
+        </ul>
+        <ul class="navbar-nav">
+          <li class="nav-item">
+            <a class="nav-link btn btn-danger" href="logout.php"><b>Sign Out</b></a>
+          </li>
+        </ul>
+      <?php else: ?>
+        <ul class="navbar-nav ml-auto">
+          <li class="nav-item">
+            <a class="nav-link" href="login.php">Login</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="signup.php">Sign Up</a>
+          </li>
+        </ul>
+      <?php endif; ?>
+    </div>
+  </div>
+</nav>
+
   <style>
     body {
       background-color: #f8f9fa;
@@ -46,8 +90,7 @@ $exercises = json_encode(fetch_exercises());
 
   <div class="container mt-4">
     <div class="text-center mb-4">
-      <a href="index.php" class="btn btn-secondary">Home</a>
-      <a href="viewWorkoutSessions.php" class="btn btn-info">View Workout Sessions</a>
+
     </div>
     <div class="form-container">
       <h3 class="text-center mb-4">Add Workout Session</h3>

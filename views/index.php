@@ -17,7 +17,7 @@ if (session_status() == PHP_SESSION_NONE) {
 
 <nav class="navbar navbar-expand-lg navbar-light bg-light">
   <div class="container">
-    <a class="navbar-brand" href="#">XSplit</a>
+    <a class="navbar-brand" href="index.php">XSplit</a>
     <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
       <span class="navbar-toggler-icon"></span>
     </button>
@@ -42,7 +42,7 @@ if (session_status() == PHP_SESSION_NONE) {
         </ul>
         <ul class="navbar-nav">
           <li class="nav-item">
-            <a class="nav-link btn btn-danger" href="logout.php">Sign Out</a>
+            <a class="nav-link btn btn-danger" href="logout.php"><b>Sign Out</b></a>
           </li>
         </ul>
       <?php else: ?>
@@ -60,9 +60,19 @@ if (session_status() == PHP_SESSION_NONE) {
 </nav>
 
 <div class="container text-center">
-  <h1 class="mt-5">Welcome to XSplit<?php if(isset($_SESSION['username'])) { echo ", " . htmlspecialchars($_SESSION['username']); } ?></h1>
+  
+  <font size="40">  
+    <b><p style="font-family:verdana">Welcome to XSplit<?php if(isset($_SESSION['username'])) { echo ", " . htmlspecialchars($_SESSION['username']); } ?> </p> </b> 
+  </font>  
+  <!-- <h1 class="mt-4">Welcome to XSplit<?php if(isset($_SESSION['username'])) { echo ", " . htmlspecialchars($_SESSION['username']); } ?></h1> -->
+  <font size="6"> 
   <p>Your ultimate workout tracker</p>
+  </font> 
+  <img src="FitnessImage.jpg" alt="XSplit" height="75%" width="75%">
+
 </div>
+
+
 
 <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>

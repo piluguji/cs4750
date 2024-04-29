@@ -54,12 +54,53 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
   </style>
 </head>
 <body>
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+  <div class="container">
+    <a class="navbar-brand" href="index.php">XSplit</a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarNav">
+      <?php if(isset($_SESSION['userID'])): ?>
+        <ul class="navbar-nav mr-auto">
+          <li class="nav-item">
+            <a class="nav-link" href="favorites.php">Favorite Exercises</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="addWorkoutSession.php">Add Workout Session</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="addNutrition.php">Add Nutrition</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="viewNutrition.php">View Nutrition</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="viewWorkoutSessions.php">View Workout Sessions</a>
+          </li>
+        </ul>
+        <ul class="navbar-nav">
+          <li class="nav-item">
+            <a class="nav-link btn btn-danger" href="logout.php"><b>Sign Out</b></a>
+          </li>
+        </ul>
+      <?php else: ?>
+        <ul class="navbar-nav ml-auto">
+          <li class="nav-item">
+            <a class="nav-link" href="login.php">Login</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="signup.php">Sign Up</a>
+          </li>
+        </ul>
+      <?php endif; ?>
+    </div>
+  </div>
+</nav>
+
 
   <div class="container mt-4">
-    <div class="text-center mb-4">
-      <a href="index.php" class="btn btn-secondary">Home</a>
-      <a href="viewNutrition.php" class="btn btn-info">View Nutrition Goals</a>
-    </div>
+
     <div class="form-container">
       <h3 class="text-center mb-4">Add Daily Nutrition Goals</h3>
       <form id="add-nutrition-form" method="POST" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>">

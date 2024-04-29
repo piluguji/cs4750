@@ -71,25 +71,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     }
 }
 
-if (isset($_POST['remove_favorite'])) {
-    $exerciseID = $_POST['exerciseID']; // The ID of the exercise to remove from favorites
-    $userID = $_SESSION['userID']; // The ID of the user, which should be in the session
 
-    // Call the function to remove from favorites
-    $result = remove_from_favorites($userID, $exerciseID);
-
-    if ($result) {
-        // Optional: Set a session flash message to show success
-        $_SESSION['flash_message'] = 'Removed from favorites successfully!';
-    } else {
-        // Optional: Set a session flash message to show an error
-        $_SESSION['flash_error'] = 'Could not remove from favorites.';
-    }
-
-    // Redirect back to the favorites page
-    header('Location: views/favorites.php');
-    exit();
-}
 
 if (isset($_POST['submit_session_button'])) {
     $date = $_POST['date'];
@@ -109,9 +91,12 @@ if (isset($_POST['submit_session_button'])) {
             if ($_POST['favorite'][$index] == 'yes') {
                 add_to_favorites($_SESSION['userID'], $exerciseID);
             }
-            else {
-                // Optionally remove from favorites if it's already there
-                remove_from_favorites($_SESSION['userID'], $exerciseID);
+            else { //if user responds with no
+                //First check if the exercise is already in favorites
+                if (inFavorites($_SESSION['userID'], $exerciseID)) {
+                    
+                    remove_from_favorites($_SESSION['userID'], $exerciseID);
+                } 
             }
         }
     }

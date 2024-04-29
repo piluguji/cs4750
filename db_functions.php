@@ -184,17 +184,17 @@ function fetch_exercises(){
 
 function create_exercise_instance($session_id, $exerciseID, $weight, $reps, $sets){
     global $db;
-    $query = "INSERT INTO exercise_instance (sets, reps, weight, exerciseID, sessionID) VALUES ($sets, :reps, :weight, :exercise_id, :session_id)";
+    $query = "INSERT INTO exercise_instance (sets, reps, weight, exerciseID, sessionID) VALUES (:sets, :reps, :weight, :exercise_id, :session_id)";
     $statement = $db->prepare($query);
-    $statement->bindValue(':reps', $reps);
+    $statement->bindValue(':sets', $sets, PDO::PARAM_INT);
+    $statement->bindValue(':reps', $reps, PDO::PARAM_INT);
     $statement->bindValue(':weight', $weight);
-    $statement->bindValue(':exercise_id', $exerciseID);
-    $statement->bindValue(':session_id', $session_id);
+    $statement->bindValue(':exercise_id', $exerciseID, PDO::PARAM_INT);
+    $statement->bindValue(':session_id', $session_id, PDO::PARAM_INT);
     $result = $statement->execute();
     $statement->closeCursor();
     return $result;
 }
-
 function fetch_exercise_name_by_id($exerciseID) {
     global $db;
     $query = "SELECT Title FROM Exercise WHERE ID = :exercise_id";
@@ -249,16 +249,42 @@ function add_to_favorites($userID, $exerciseID) {
     return $result;
 }
 
-// function remove_from_favorites($userID, $exerciseID){
-//     global $db;
-//     $query = "DELETE FROM favorites";
-//     $statement = $db->prepare($query);
-//     $statement->bindValue(':user_id', $userID);
-//     $statement->bindValue(':exercise_id', $exerciseID);
-//     $result = $statement->execute();
-//     $statement->closeCursor();
-//     return $result;
-// }
+function remove_from_favorites($userID, $exerciseID){
+    global $db;
+    $query = "DELETE FROM favorites WHERE userID = :user_id AND exerciseID = :exercise_id";
+    $statement = $db->prepare($query);
+    $statement->bindValue(':user_id', $userID);
+    $statement->bindValue(':exercise_id', $exerciseID);
+    $result = $statement->execute();
+    $statement->closeCursor();
+    return $result;
+}
+
+function inFavorites($userID, $exerciseID) {
+    global $db;
+
+    // Prepare the SQL query to check if the exercise exists in the user's favorites
+    $query = "SELECT COUNT(*) FROM favorites WHERE userID = :user_id AND exerciseID = :exercise_id";
+
+    // Prepare the statement
+    $statement = $db->prepare($query);
+
+    // Bind the user ID and exercise ID parameters
+    $statement->bindValue(':user_id', $userID, PDO::PARAM_INT);
+    $statement->bindValue(':exercise_id', $exerciseID, PDO::PARAM_INT);
+
+    // Execute the query
+    $statement->execute();
+
+    // Fetch the count result
+    $count = $statement->fetchColumn();
+
+    // Close the cursor to free up the statement
+    $statement->closeCursor();
+
+    // Return true if count is more than 0, meaning the exercise is a favorite
+    return $count > 0;
+}
 
 
 function addFeedback($sessionID, $rating, $comments) {
