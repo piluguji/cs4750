@@ -1,7 +1,54 @@
 <?php
 require("config/connect_db.php");
 require("db_functions.php");
-// session_start();
+session_start();
+
+if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['login_button'])) {
+    $username = trim($_POST['username']);
+    $password = trim($_POST['password']);
+    
+    $user = checkLogin($username);
+    if ($user && password_verify($password, $user['password'])) {
+        session_start();
+        $_SESSION['userID'] = $user['userID'];
+        $_SESSION['username'] = $username;
+        header("Location: views/index.php");
+        exit();
+    } else {
+        // session_start();
+        $_SESSION['login_error'] = 'Invalid username or password. Please try again.';
+        header("Location: views/login.php");
+        exit();
+    }
+}
+
+// ... [Other POST handling code for adding to favorites, etc.]
+
+// Handling the sign up
+if (isset($_POST['signUp_button'])) {
+    $username = trim($_POST['username']);
+    $password = password_hash(trim($_POST['password']), PASSWORD_DEFAULT);
+    $height = trim($_POST['height']);
+    $weight = trim($_POST['weight']);
+    $age = trim($_POST['age']);
+    
+    if (usernameExists($username)) {
+        // Username already taken
+        $_SESSION['signup_error'] = 'Username already taken. Please choose a different one.';
+        header("Location: views/signup.php");
+        exit();
+    } else {
+        // Username is unique, proceed with signup
+        $userID = signUp($username, $password, $height, $age, $weight);
+        // Set session variables and log the user in
+        $_SESSION['userID'] = $userID;
+        $_SESSION['username'] = $username;
+        // Redirect to the home page
+        header("Location: views/index.php");
+        exit();
+    }
+}
+
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     // Check if the form for adding to favorites was submitted.
     if (isset($_POST['exerciseID'])) {
@@ -80,31 +127,32 @@ function fetch_exercise_name_by_id($exerciseID) {
     return $exercise['Title'];
 }
 
-if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    if (isset($_POST['login_button'])) {
-        $username = $_POST["username"];
-        $password = $_POST["password"];
-        $result = checkLogin($username, $password);
-        if ($result) {
-            $_SESSION['userID'] = $result['userID']; // Assuming userID is returned from checkLogin function
-            $_SESSION['username'] = $username;
-            header("Location: views/index.php"); // Redirect or do further processing
-        } else {
-            echo "Login failed"; // Handle failed login
-        }
-    } else if (isset($_POST['signUp_button'])) {
-        $username = $_POST["username"];
-        $password = $_POST["password"];
-        $weight = $_POST["weight"];
-        $height = $_POST["height"];
-        $age = $_POST["age"];
-        signUp($username, $password, $height, $age, $weight);
-        header("Location: views/login.php");
-    } else {
-        echo "Invalid request";
-        var_dump($_POST);
-    }
-}
+// if ($_SERVER["REQUEST_METHOD"] == "POST") {
+//     if (isset($_POST['action']) && $_POST['action'] == 'login') {
+//         $username = $_POST["username"];
+//         $password = $_POST["password"];
+//         $result = checkLogin($username, $password);
+//         if ($result) {
+//             $_SESSION['userID'] = $result['userID']; // Assuming userID is returned from checkLogin function
+//             $_SESSION['username'] = $username;
+            
+//             header("Location: views/index.php"); // Redirect or do further processing
+//         } else {
+//             echo "Login failed"; // Handle failed login
+//         }
+//     } else if (isset($_POST['signUp_button'])) {
+//         $username = $_POST["username"];
+//         $password = $_POST["password"];
+//         $weight = $_POST["weight"];
+//         $height = $_POST["height"];
+//         $age = $_POST["age"];
+//         signUp($username, $password, $height, $age, $weight);
+//         header("Location: views/login.php");
+//     } else {
+//         echo "Invalid request";
+//         var_dump($_POST);
+//     }
+// }
 
 
 ?>

@@ -1,6 +1,12 @@
 <?php
 require('../config/connect_db.php');
-?> 
+// Start the session at the top to ensure it's available
+session_start();
+
+// Handle messages and errors
+$login_error = isset($_SESSION['login_error']) ? $_SESSION['login_error'] : '';
+unset($_SESSION['login_error']); // Clear the error after displaying it
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -19,6 +25,11 @@ require('../config/connect_db.php');
           Login
         </div>
         <div class="card-body">
+          <?php if($login_error): ?>
+            <div class="alert alert-danger" role="alert">
+              <?php echo $login_error; ?>
+            </div>
+          <?php endif; ?>
           <form method="POST" action="../controller.php">
             <div class="form-group">
               <label for="username">Username</label>
@@ -28,7 +39,10 @@ require('../config/connect_db.php');
               <label for="password">Password</label>
               <input type="password" class="form-control" id="password" name="password" required>
             </div>
-            <button type="submit" name = "login_button" class="btn btn-primary">Login</button>
+            <button type="submit" name="login_button" class="btn-default btn-block btn-primary">Login</button>
+             Don't have an account? <a href="signup.php">Sign up</a>
+
+
           </form>
         </div>
       </div>

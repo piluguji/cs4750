@@ -23,15 +23,51 @@ function deleteSession($sessionID, $userID) {
 
     return $result;
 }
-function checkLogin($username, $password) {
+function checkLogin($username) {
     global $db;   
-    $query = "SELECT userID FROM User WHERE username='$username' AND password='$password'";
+    $query = "SELECT userID, password FROM User WHERE username = :username";
     $statement = $db->prepare($query);
+    $statement->bindValue(':username', $username);
     $statement->execute();
-    $result = $statement->fetch();
-    $statement->closeCursor();
+    return $statement->fetch(PDO::FETCH_ASSOC);
+}
+
+function signUp($username, $password, $height, $age, $weight) {
+    global $db;
+    // Insert the user into the database
+    $query = "INSERT INTO User (username, password) VALUES (:username, :password)";
+    $statement = $db->prepare($query);
+    $statement->bindValue(':username', $username);
+    $statement->bindValue(':password', $password);
+    $statement->execute();
+    $userID = $db->lastInsertId(); // Get the last inserted ID
     
-    return $result;
+    // Insert personal info into the database
+    addPersonalInfo($userID, $height, $weight, $age);
+    return $userID; // Return the new user's ID
+}
+
+function addPersonalInfo($userId, $height, $weight, $age){
+    global $db;
+    $query = "INSERT INTO user_personal_info (userID, height, weight, age) VALUES (:user_id, :height, :weight, :age)";
+    $statement = $db->prepare($query);
+    $statement->bindValue(':user_id', $userId);
+    $statement->bindValue(':height', $height);
+    $statement->bindValue(':weight', $weight);
+    $statement->bindValue(':age', $age);
+    $statement->execute();
+    $statement->closeCursor();
+}
+
+function usernameExists($username) {
+    global $db;
+    $query = "SELECT userID FROM User WHERE username = :username";
+    $statement = $db->prepare($query);
+    $statement->bindValue(':username', $username);
+    $statement->execute();
+    $user = $statement->fetch(PDO::FETCH_ASSOC);
+    $statement->closeCursor();
+    return $user ? true : false;
 }
 function getExercisesForSession($sessionID, $userID)
 {
@@ -52,39 +88,39 @@ function getExercisesForSession($sessionID, $userID)
     return $exercises;
 }
 
-function addUser($username, $password){
-    global $db;
-    $query = "INSERT INTO User (username, password) VALUES (:username, :password)";
-    $statement = $db->prepare($query);
-    $statement->bindValue(':username', $username);
-    $statement->bindValue(':password', $password);
-    $result = $statement->execute();
-    $statement->closeCursor();
-}
+// function addUser($username, $password){
+//     global $db;
+//     $query = "INSERT INTO User (username, password) VALUES (:username, :password)";
+//     $statement = $db->prepare($query);
+//     $statement->bindValue(':username', $username);
+//     $statement->bindValue(':password', $password);
+//     $result = $statement->execute();
+//     $statement->closeCursor();
+// }
 
-function addPersonalInfo($userId, $height, $weight, $age){
-    global $db;
+// function addPersonalInfo($userId, $height, $weight, $age){
+//     global $db;
 
-    $query = "INSERT INTO user_personal_info (height, weight, age, userID) VALUES (:height, :weight, :age, :user_id )";
-    $statement = $db->prepare($query);
-    $statement->bindValue(':user_id', $userId);
-    $statement->bindValue(':height', $height);
-    $statement->bindValue(':weight', $weight);
-    $statement->bindValue(':age', $age);
-    $result = $statement->execute();
-    $statement->closeCursor();
-}
+//     $query = "INSERT INTO user_personal_info (height, weight, age, userID) VALUES (:height, :weight, :age, :user_id )";
+//     $statement = $db->prepare($query);
+//     $statement->bindValue(':user_id', $userId);
+//     $statement->bindValue(':height', $height);
+//     $statement->bindValue(':weight', $weight);
+//     $statement->bindValue(':age', $age);
+//     $result = $statement->execute();
+//     $statement->closeCursor();
+// }
 
-function signUp($username, $password, $height, $age, $weight) {
-    global $db;
+// function signUp($username, $password, $height, $age, $weight) {
+//     global $db;
     
-    if(checkLogin($username, $password)){
-        return false;
-    }
-    addUser($username, $password);
-    $userId = $db->lastInsertId();
-    addPersonalInfo($userId, $height, $weight, $age);
-}
+//     if(checkLogin($username, $password)){
+//         return false;
+//     }
+//     addUser($username, $password);
+//     $userId = $db->lastInsertId();
+//     addPersonalInfo($userId, $height, $weight, $age);
+// }
 
 function getSessions($userId){
     global $db;

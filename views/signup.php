@@ -1,5 +1,8 @@
 <?php
 require('../config/connect_db.php');
+session_start();
+$signup_error = isset($_SESSION['signup_error']) ? $_SESSION['signup_error'] : '';
+unset($_SESSION['signup_error']);
 ?> 
 <!DOCTYPE html>
 <html lang="en">
@@ -19,6 +22,11 @@ require('../config/connect_db.php');
           Sign Up
         </div>
         <div class="card-body">
+          <?php if($signup_error): ?>
+              <div class="alert alert-danger" role="alert">
+                <?php echo $signup_error; ?>
+              </div>
+          <?php endif; ?>
           <form method="POST" action="../controller.php">
             <div class="form-group">
               <label for="username">Username</label>
@@ -40,10 +48,13 @@ require('../config/connect_db.php');
               <label for="age">Age</label>
               <input type="number" class="form-control" id="age" name="age" required>
             </div>
-            <button type="submit" name = "signUp_button" class="btn btn-primary">Sign Up</button>
+            <button type="submit" name = "signUp_button" class=" btn-default btn-block btn-primary">Sign Up</button>
+              Already have an account? <a href="login.php">Log in</a>
+
           </form>
         </div>
       </div>
+
     </div>
   </div>
 </div>
