@@ -15,29 +15,58 @@ if (session_status() == PHP_SESSION_NONE) {
 </head>
 <body>
 
-<div class="container mt-5 text-center">
-  <h1>Welcome to XSplit<?php if(isset($_SESSION['username'])) { echo ", " . $_SESSION['username']; } ?></h1>
-  <p>Your ultimate workout tracker</p>
-  <div class="row mt-4">
-    <div class="col-12">
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+  <div class="container">
+    <a class="navbar-brand" href="#">XSplit</a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarNav">
       <?php if(isset($_SESSION['userID'])): ?>
-        <!-- User is logged in, show Sign out and Add Exercise -->
-        <a href="favorites.php" class="btn btn-info btn-lg mr-2">View Favorite Exercises</a>
-        <a href="addWorkoutSession.php" class="btn btn-info btn-lg mr-2">Add Workout Session</a>
-        <a href="addNutrition.php" class="btn btn-info btn-lg mr-2">Add Nutrition</a>
-        <a href="viewNutrition.php" class="btn btn-info btn-lg mr-2">View Nutrition</a>
-        <a href="viewWorkoutSessions.php" class="btn btn-info btn-lg mr-2">View Workout Sessions</a>
-        <a href="viewWorkoutSessions.php" class="btn btn-info btn-lg mr-2">Add Feedback</a>
-        <a href="viewWorkoutSessions.php" class="btn btn-info btn-lg mr-2">View Feedback</a>
-        <a href="logout.php" class="btn btn-danger btn-lg">Sign Out</a>
+        <ul class="navbar-nav mr-auto">
+          <li class="nav-item">
+            <a class="nav-link" href="favorites.php">Favorite Exercises</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="addWorkoutSession.php">Add Workout Session</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="addNutrition.php">Add Nutrition</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="viewNutrition.php">View Nutrition</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="viewWorkoutSessions.php">View Workout Sessions</a>
+          </li>
+        </ul>
+        <ul class="navbar-nav">
+          <li class="nav-item">
+            <a class="nav-link btn btn-danger" href="logout.php">Sign Out</a>
+          </li>
+        </ul>
       <?php else: ?>
-        <!-- No user is logged in, show Login and Sign Up -->
-        <a href="login.php" class="btn btn-primary btn-lg mr-2">Login</a>
-        <a href="signup.php" class="btn btn-success btn-lg">Sign Up</a>
+        <ul class="navbar-nav ml-auto">
+          <li class="nav-item">
+            <a class="nav-link" href="login.php">Login</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="signup.php">Sign Up</a>
+          </li>
+        </ul>
       <?php endif; ?>
     </div>
   </div>
+</nav>
+
+<div class="container text-center">
+  <h1 class="mt-5">Welcome to XSplit<?php if(isset($_SESSION['username'])) { echo ", " . htmlspecialchars($_SESSION['username']); } ?></h1>
+  <p>Your ultimate workout tracker</p>
 </div>
+
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 
 </body>
 </html>

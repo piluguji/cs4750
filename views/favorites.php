@@ -1,5 +1,7 @@
 <?php 
 require('../db_functions.php');
+require('../config/connect_db.php');
+
 if (session_status() == PHP_SESSION_NONE) {
     session_start();
 }
@@ -11,6 +13,8 @@ if (!isset($_SESSION['userID'])) {
 
 // Fetch the user's favorite exercises
 $favorites = fetch_favorites($_SESSION['userID']);
+
+
 ?>
 
 <!DOCTYPE html>
@@ -23,6 +27,7 @@ $favorites = fetch_favorites($_SESSION['userID']);
 </head>
 <body>
 
+
 <div class="container mt-4">
     <div class="text-center mb-4">
       <a href="index.php" class="btn btn-secondary">Home</a>
@@ -30,7 +35,10 @@ $favorites = fetch_favorites($_SESSION['userID']);
     <h3 class="text-center mb-4">Your Favorite Exercises</h3>
     <ul class="list-group">
         <?php foreach ($favorites as $favorite): ?>
-            <li class="list-group-item"><?= htmlspecialchars($favorite['name']) ?></li>
+            <li class="list-group-item d-flex justify-content-between align-items-center">
+                <?= htmlspecialchars($favorite['name']) ?>
+
+            </li>
         <?php endforeach; ?>
     </ul>
 </div>

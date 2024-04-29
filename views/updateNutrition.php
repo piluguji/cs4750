@@ -62,7 +62,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         </div>
         <div class="form-group">
           <label for="date">Date</label>
-          <input type="date" class="form-control" name="date" id="date" value="<?php echo $nutrition_goal['Date']; ?>" required>
+          <input type="date" class="form-control" name="date" id="date" value="<?php echo $nutrition_goal['date_set']; ?>" required>
         </div>
         <button type="submit" class="btn btn-primary">Update Goal</button>
         <a href="viewNutrition.php" class="btn btn-secondary">Cancel</a>

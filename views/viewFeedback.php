@@ -33,16 +33,16 @@ $feedbacks = getFeedback($sessionID);
       <thead>
         <tr>
           <th scope="col">#</th>
-          <th scope="col">Satisfaction</th>
-          <th scope="col">Difficulty</th>
+          <th scope="col">Rating</th>
+          <th scope="col">Comments</th>
         </tr>
       </thead>
       <tbody>
         <?php foreach ($feedbacks as $index => $feedback): ?>
           <tr>
             <th scope="row"><?= $index + 1 ?></th>
-            <td><?= htmlspecialchars($feedback['satisfaction']) ?></td>
-            <td><?= htmlspecialchars($feedback['difficulty']) ?></td>
+            <td><?= htmlspecialchars($feedback['rating']) ?></td>
+            <td><?= htmlspecialchars($feedback['comments']) ?></td>
 
           </tr>
         <?php endforeach; ?>

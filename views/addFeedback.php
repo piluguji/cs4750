@@ -48,19 +48,21 @@ $sessionID = $_GET['sessionID'];
       <?php
       $errors = [];
       if ($_SERVER['REQUEST_METHOD'] === 'POST' && $sessionID) {
-          $satisfaction = $_POST['rating'] ?? 0;
-          $difficulty = $_POST['difficulty'] ?? '';
+          $rating = $_POST['rating'] ?? 0;
+          $comments = $_POST['comments'] ?? '';
 
-          if ($satisfaction < 1 || $satisfaction > 10) {
+          if ($rating < 1 || $rating > 10) {
               $errors[] = 'Rating must be between 1 and 10.';
           }
-          if (empty($difficulty)) {
-              $errors[] = 'Difficulty field is required.';
+          if (empty($comments)) {
+              $errors[] = 'Comments field is required.';
           }
 
           if (empty($errors) && isset($sessionID)) {
             // Add feedback to the database
-            if (addFeedback($sessionID, $satisfaction, $difficulty)) {
+
+
+            if (addFeedback($sessionID, $rating, $comments)) {
                 // Redirect on successful insertion
                 header('Location: viewWorkoutSessions.php');
                 exit();
@@ -82,14 +84,14 @@ $sessionID = $_GET['sessionID'];
           </div>
       <?php endif; ?>
 
-      <form method="POST" action="">
+      <form method="POST" action="addFeedback.php?sessionID=<?= $sessionID ?>">
           <div class="form-group">
               <label for="rating">Rating (1-10):</label>
               <input type="number" class="form-control" name="rating" id="rating" min="1" max="10" required>
           </div>
           <div class="form-group">
-              <label for="difficulty">Difficulty:</label>
-              <textarea class="form-control" name="difficulty" id="difficulty" required></textarea>
+              <label for="comments">Comments:</label>
+              <textarea class="form-control" name="comments" id="comments" required></textarea>
           </div>
           <div class="text-center">
               <button type="submit" class="btn btn-success">Submit Feedback</button>

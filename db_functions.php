@@ -5,24 +5,63 @@ if (session_status() == PHP_SESSION_NONE) {
 }
 function deleteSession($sessionID, $userID) {
     global $db;
-    
-    // Delete session from workout_session table
-    $query = "DELETE FROM workout_session WHERE sessionID = :session_id AND userID = :user_id";
-    $statement = $db->prepare($query);
-    $statement->bindValue(':session_id', $sessionID);
-    $statement->bindValue(':user_id', $userID);
-    $result = $statement->execute();
-    $statement->closeCursor();
 
-    // Delete associated exercise instances
-    $query = "DELETE FROM exercise_instance WHERE sessionID = :session_id";
-    $statement = $db->prepare($query);
-    $statement->bindValue(':session_id', $sessionID);
-    $result = $statement->execute();
-    $statement->closeCursor();
+    // Begin transaction
+    $db->beginTransaction();
 
-    return $result;
+    try {
+        // Delete records from 'provides' where 'feedbackID' is linked to the 'sessionID'
+        $queryProvides = "DELETE FROM provides WHERE feedbackID IN 
+                          (SELECT feedbackID FROM workout_feedback WHERE sessionID = :session_id)";
+        $statementProvides = $db->prepare($queryProvides);
+        $statementProvides->bindValue(':session_id', $sessionID);
+        $statementProvides->execute();
+
+        // Delete records from 'progress' where 'feedbackID' is linked to the 'sessionID'
+        $queryProgress = "DELETE FROM progress WHERE feedbackID IN 
+                          (SELECT feedbackID FROM workout_feedback WHERE sessionID = :session_id)";
+        $statementProgress = $db->prepare($queryProgress);
+        $statementProgress->bindValue(':session_id', $sessionID);
+        $statementProgress->execute();
+
+        // Delete feedback from the 'workout_feedback' table
+        $queryFeedback = "DELETE FROM workout_feedback WHERE sessionID = :session_id";
+        $statementFeedback = $db->prepare($queryFeedback);
+        $statementFeedback->bindValue(':session_id', $sessionID);
+        $statementFeedback->execute();
+
+        // Delete associated exercise instances
+        $queryExercises = "DELETE FROM exercise_instance WHERE sessionID = :session_id";
+        $statementExercises = $db->prepare($queryExercises);
+        $statementExercises->bindValue(':session_id', $sessionID);
+        $statementExercises->execute();
+
+        // Finally, delete the session from 'workout_session'
+        $querySession = "DELETE FROM workout_session WHERE sessionID = :session_id AND userID = :user_id";
+        $statementSession = $db->prepare($querySession);
+        $statementSession->bindValue(':session_id', $sessionID);
+        $statementSession->bindValue(':user_id', $userID);
+        $statementSession->execute();
+
+        // Commit transaction
+        $db->commit();
+
+        // Close all statement cursors
+        $statementProvides->closeCursor();
+        $statementProgress->closeCursor();
+        $statementFeedback->closeCursor();
+        $statementExercises->closeCursor();
+        $statementSession->closeCursor();
+
+        return true;
+    } catch (PDOException $e) {
+        // Rollback transaction on error
+        $db->rollBack();
+        error_log("Error in deleteSession: " . $e->getMessage());
+        return false; // or return the error message if you want to display it
+    }
 }
+
 function checkLogin($username) {
     global $db;   
     $query = "SELECT userID, password FROM User WHERE username = :username";
@@ -88,47 +127,29 @@ function getExercisesForSession($sessionID, $userID)
     return $exercises;
 }
 
-// function addUser($username, $password){
-//     global $db;
-//     $query = "INSERT INTO User (username, password) VALUES (:username, :password)";
-//     $statement = $db->prepare($query);
-//     $statement->bindValue(':username', $username);
-//     $statement->bindValue(':password', $password);
-//     $result = $statement->execute();
-//     $statement->closeCursor();
-// }
-
-// function addPersonalInfo($userId, $height, $weight, $age){
-//     global $db;
-
-//     $query = "INSERT INTO user_personal_info (height, weight, age, userID) VALUES (:height, :weight, :age, :user_id )";
-//     $statement = $db->prepare($query);
-//     $statement->bindValue(':user_id', $userId);
-//     $statement->bindValue(':height', $height);
-//     $statement->bindValue(':weight', $weight);
-//     $statement->bindValue(':age', $age);
-//     $result = $statement->execute();
-//     $statement->closeCursor();
-// }
-
-// function signUp($username, $password, $height, $age, $weight) {
-//     global $db;
-    
-//     if(checkLogin($username, $password)){
-//         return false;
-//     }
-//     addUser($username, $password);
-//     $userId = $db->lastInsertId();
-//     addPersonalInfo($userId, $height, $weight, $age);
-// }
 
 function getSessions($userId){
+    // global $db;
+    // $query = "SELECT * FROM workout_session WHERE userID = :user_id ORDER BY date DESC"; // Assuming 'date' is the column containing the date
+    // $statement = $db->prepare($query);
+    // $statement->bindValue(':user_id', $userId);
+    // $statement->execute();
+    // $result = $statement->fetchAll();
+    // $statement->closeCursor();
+    // return $result;
     global $db;
-    $query = "SELECT * FROM workout_session WHERE userID = :user_id ORDER BY date DESC"; // Assuming 'date' is the column containing the date
+    $query = "
+        SELECT ws.sessionID, ws.date, ws.duration, IFNULL(AVG(wf.rating), 'No feedback yet') as avgRating
+        FROM workout_session ws
+        LEFT JOIN workout_feedback wf ON ws.sessionID = wf.sessionID
+        WHERE ws.userID = :user_id
+        GROUP BY ws.sessionID
+        ORDER BY ws.date DESC
+    ";
     $statement = $db->prepare($query);
     $statement->bindValue(':user_id', $userId);
     $statement->execute();
-    $result = $statement->fetchAll();
+    $result = $statement->fetchAll(PDO::FETCH_ASSOC);
     $statement->closeCursor();
     return $result;
 }
@@ -161,7 +182,7 @@ function fetch_exercises(){
     return $exercises;
 }
 
-function create_exercise($session_id, $exerciseID, $weight, $reps, $sets){
+function create_exercise_instance($session_id, $exerciseID, $weight, $reps, $sets){
     global $db;
     $query = "INSERT INTO exercise_instance (sets, reps, weight, exerciseID, sessionID) VALUES ($sets, :reps, :weight, :exercise_id, :session_id)";
     $statement = $db->prepare($query);
@@ -172,6 +193,17 @@ function create_exercise($session_id, $exerciseID, $weight, $reps, $sets){
     $result = $statement->execute();
     $statement->closeCursor();
     return $result;
+}
+
+function fetch_exercise_name_by_id($exerciseID) {
+    global $db;
+    $query = "SELECT Title FROM Exercise WHERE ID = :exercise_id";
+    $statement = $db->prepare($query);
+    $statement->bindValue(':exercise_id', $exerciseID);
+    $statement->execute();
+    $exercise = $statement->fetch(PDO::FETCH_ASSOC);
+    $statement->closeCursor();
+    return $exercise['Title'];
 }
 
 // Fetch the list of user's favorite exercises
@@ -192,42 +224,88 @@ function fetch_favorites($userID){
 // Add an exercise to the user's favorites
 function add_to_favorites($userID, $exerciseID) {
     global $db;
+    
+    // Check if the entry already exists
+    $checkQuery = "SELECT 1 FROM favorites WHERE userID = :user_id AND exerciseID = :exercise_id";
+    $checkStmt = $db->prepare($checkQuery);
+    $checkStmt->bindValue(':user_id', $userID);
+    $checkStmt->bindValue(':exercise_id', $exerciseID);
+    $checkStmt->execute();
+
+    // If the entry exists, fetch will return true
+    if ($checkStmt->fetch()) {
+        // The exercise is already in favorites, so we just return without doing anything
+        return true; // You could also return false or some indicator that it already exists
+    }
+    
+    // If we get here, the entry doesn't exist, so we can safely insert it
     $query = "INSERT INTO favorites (userID, exerciseID) VALUES (:user_id, :exercise_id)";
     $statement = $db->prepare($query);
     $statement->bindValue(':user_id', $userID);
     $statement->bindValue(':exercise_id', $exerciseID);
     $result = $statement->execute();
     $statement->closeCursor();
+    
     return $result;
 }
 
-// Remove an exercise from the user's favorites
-function remove_from_favorites($userID, $exerciseID){
-    global $db;
-    $query = "DELETE FROM favorites WHERE userID = :user_id AND exerciseID = :exercise_id";
-    $statement = $db->prepare($query);
-    $statement->bindValue(':user_id', $userID);
-    $statement->bindValue(':exercise_id', $exerciseID);
-    $result = $statement->execute();
-    $statement->closeCursor();
-    return $result;
-}
-function addFeedback($session_id, $satisfaction, $difficulty) {
-    global $db;
-    $query = "INSERT INTO workout_feedback (sessionID, satisfaction, difficulty) VALUES (:session_id, :satisfaction, :difficulty)";
-    $statement = $db->prepare($query);
-    $statement->bindValue(':session_id', $session_id);
-    $statement->bindValue(':satisfaction', $satisfaction);
-    $statement->bindValue(':difficulty', $difficulty);
-    $result = $statement->execute();
-    $statement->closeCursor();
-    return $result;
-}
+// function remove_from_favorites($userID, $exerciseID){
+//     global $db;
+//     $query = "DELETE FROM favorites";
+//     $statement = $db->prepare($query);
+//     $statement->bindValue(':user_id', $userID);
+//     $statement->bindValue(':exercise_id', $exerciseID);
+//     $result = $statement->execute();
+//     $statement->closeCursor();
+//     return $result;
+// }
 
+
+function addFeedback($sessionID, $rating, $comments) {
+    global $db;
+
+    // Begin transaction
+    $db->beginTransaction();
+
+    try {
+        // Insert into workout_feedback
+        $queryFeedback = "INSERT INTO workout_feedback (sessionID, rating, comments) VALUES (:sessionID, :rating, :comments)";
+        $statementFeedback = $db->prepare($queryFeedback);
+        $statementFeedback->bindValue(':sessionID', $sessionID);
+        $statementFeedback->bindValue(':rating', $rating);
+        $statementFeedback->bindValue(':comments', $comments);
+        $statementFeedback->execute();
+
+        // Get the last inserted feedback ID
+        $feedbackID = $db->lastInsertId();
+
+
+        // Insert into provides
+        $queryProvides = "INSERT INTO provides (feedbackID, userID) VALUES (:feedbackID, :userID)";
+        $statementProvides = $db->prepare($queryProvides);
+        $statementProvides->bindValue(':feedbackID', $feedbackID);
+        $statementProvides->bindValue(':userID', $_SESSION['userID']);
+        $statementProvides->execute();
+
+        // Commit transaction
+        $db->commit();
+
+        // Close all statement cursors
+        $statementFeedback->closeCursor();
+        $statementProvides->closeCursor();
+
+        return true;
+    } catch (PDOException $e) {
+        // Rollback transaction on error
+        $db->rollBack();
+        error_log("Error in addFeedback: " . $e->getMessage());
+        return false;
+    }
+}
 
 function getFeedback($sessionID) {
     global $db;
-    $query = "SELECT satisfaction, difficulty FROM workout_feedback WHERE sessionID = :session_id";
+    $query = "SELECT rating, comments FROM workout_feedback WHERE sessionID = :session_id";
     $statement = $db->prepare($query);
     $statement->bindValue(':session_id', $sessionID);
     $statement->execute();

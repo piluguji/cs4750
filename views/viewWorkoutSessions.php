@@ -92,7 +92,7 @@ if (isset($_POST['delete_session'])) {
           <input type="hidden" name="sessionID" value="<?= $session['sessionID'] ?>">
         </form>
         <a href="sessionDetails.php?sessionID=<?= htmlspecialchars($session['sessionID']) ?>">
-          Session on <?= htmlspecialchars($session['Date']) ?> - Duration: <?= htmlspecialchars($session['Duration']) ?> mins
+          Session on <?= htmlspecialchars($session['date']) ?> - Duration: <?= htmlspecialchars($session['duration']) ?> mins - Average Rating: <?= htmlspecialchars($session['avgRating']) ?>
         </a>
       </li>
     <?php endforeach; ?>

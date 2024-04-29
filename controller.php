@@ -1,7 +1,7 @@
 <?php
 require("config/connect_db.php");
 require("db_functions.php");
-session_start();
+// session_start();
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['login_button'])) {
     $username = trim($_POST['username']);
@@ -21,8 +21,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['login_button'])) {
         exit();
     }
 }
-
-// ... [Other POST handling code for adding to favorites, etc.]
 
 // Handling the sign up
 if (isset($_POST['signUp_button'])) {
@@ -63,27 +61,36 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         if ($result) {
             // Redirect back to the favorites page with a success message.
             $_SESSION['message'] = 'Exercise added to favorites!';
-            header('Location: favorites.php');
+            header('Location: views/favorites.php');
         } else {
             // Redirect back or output an error message.
             $_SESSION['error'] = 'Could not add the exercise to favorites.';
-            header('Location: favorites.php');
+            header('Location: views/favorites.php');
         }
         exit();
     }
 }
 
-if (isset($_POST['remove_from_favorites'])) {
-    $userID = $_SESSION['userID'];
-    $exerciseID = $_POST['exerciseID'];
+if (isset($_POST['remove_favorite'])) {
+    $exerciseID = $_POST['exerciseID']; // The ID of the exercise to remove from favorites
+    $userID = $_SESSION['userID']; // The ID of the user, which should be in the session
+
+    // Call the function to remove from favorites
     $result = remove_from_favorites($userID, $exerciseID);
+
     if ($result) {
-        echo json_encode(['success' => true]);
+        // Optional: Set a session flash message to show success
+        $_SESSION['flash_message'] = 'Removed from favorites successfully!';
     } else {
-        // Handle error
-        echo json_encode(['error' => 'Could not remove from favorites']);
+        // Optional: Set a session flash message to show an error
+        $_SESSION['flash_error'] = 'Could not remove from favorites.';
     }
+
+    // Redirect back to the favorites page
+    header('Location: views/favorites.php');
+    exit();
 }
+
 if (isset($_POST['submit_session_button'])) {
     $date = $_POST['date'];
     $duration = $_POST['duration'];
@@ -98,7 +105,7 @@ if (isset($_POST['submit_session_button'])) {
             $reps = $_POST['reps'][$index];
             $weight = $_POST['weight'][$index];
 
-            create_exercise($sessionID, $exerciseID, $weight, $reps, $sets);
+            create_exercise_instance($sessionID, $exerciseID, $weight, $reps, $sets);
             if ($_POST['favorite'][$index] == 'yes') {
                 add_to_favorites($_SESSION['userID'], $exerciseID);
             }
@@ -115,44 +122,9 @@ if (isset($_POST['submit_session_button'])) {
 }
 
 
-// You'll need to create this function to fetch the exercise name based on its ID
-function fetch_exercise_name_by_id($exerciseID) {
-    global $db;
-    $query = "SELECT Title FROM Exercise WHERE ID = :exercise_id";
-    $statement = $db->prepare($query);
-    $statement->bindValue(':exercise_id', $exerciseID);
-    $statement->execute();
-    $exercise = $statement->fetch(PDO::FETCH_ASSOC);
-    $statement->closeCursor();
-    return $exercise['Title'];
-}
 
-// if ($_SERVER["REQUEST_METHOD"] == "POST") {
-//     if (isset($_POST['action']) && $_POST['action'] == 'login') {
-//         $username = $_POST["username"];
-//         $password = $_POST["password"];
-//         $result = checkLogin($username, $password);
-//         if ($result) {
-//             $_SESSION['userID'] = $result['userID']; // Assuming userID is returned from checkLogin function
-//             $_SESSION['username'] = $username;
-            
-//             header("Location: views/index.php"); // Redirect or do further processing
-//         } else {
-//             echo "Login failed"; // Handle failed login
-//         }
-//     } else if (isset($_POST['signUp_button'])) {
-//         $username = $_POST["username"];
-//         $password = $_POST["password"];
-//         $weight = $_POST["weight"];
-//         $height = $_POST["height"];
-//         $age = $_POST["age"];
-//         signUp($username, $password, $height, $age, $weight);
-//         header("Location: views/login.php");
-//     } else {
-//         echo "Invalid request";
-//         var_dump($_POST);
-//     }
-// }
+
+
 
 
 ?>
