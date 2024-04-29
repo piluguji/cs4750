@@ -338,19 +338,34 @@ function getFeedback($sessionID) {
     return $statement->fetchAll();
 }
 
-
+function nutritionAlreadyOnDay($date, $userID){
+    global $db;
+    $query = "SELECT nutritionID FROM Nutrition WHERE `Date` = :date AND userID = :user_id";
+    $statement = $db->prepare($query);
+    $statement->bindValue(':date', $date);
+    $statement->bindValue(':user_id', $userID);
+    $statement->execute();
+    $result = $statement->fetch();
+    $statement->closeCursor();
+    return $result ? true : false;
+}
 
 function createNutrition($protein_goal, $calorie_goal, $date, $user_id){
     global $db;
-    $query = "INSERT INTO Nutrition (protein_goal, calorie_goal, `Date`, userID) VALUES (:protein_goal, :calorie_goal, :Date, :user_id)";
-    $statement = $db->prepare($query);
-    $statement->bindValue(':protein_goal', $protein_goal);
-    $statement->bindValue(':calorie_goal', $calorie_goal);
-    $statement->bindValue(':Date', $date); 
-    $statement->bindValue(':user_id', $user_id);
-    $result = $statement->execute();
-    $statement->closeCursor();
-    return $db->lastInsertId();
+    if (nutritionAlreadyOnDay($date, $user_id)){
+        return "Nutrition for that date already exists"; 
+    }else{
+        $query = "INSERT INTO Nutrition (protein_goal, calorie_goal, `Date`, userID) VALUES (:protein_goal, :calorie_goal, :Date, :user_id)";
+        $statement = $db->prepare($query);
+        $statement->bindValue(':protein_goal', $protein_goal);
+        $statement->bindValue(':calorie_goal', $calorie_goal);
+        $statement->bindValue(':Date', $date); 
+        $statement->bindValue(':user_id', $user_id);
+        $result = $statement->execute();
+        $statement->closeCursor();
+        return TRUE;
+    }
+    
 }
 
 

@@ -21,11 +21,16 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $user_id = $_SESSION['userID'];
 
     // Call the function to insert the goals into the database.
-    $nutrition_id = createNutrition($protein_goal, $calorie_goal, $date, $user_id); // Ensure you capture the 'date' from the form
-
+    $error_message = createNutrition($protein_goal, $calorie_goal, $date, $user_id);
+    if ($error_message) {
+        // Display the error message as a toast
+        echo "<script>alert('$error_message');</script>";
+    }else{
+      header('Location: index.php');
+      exit();
+    }
     // After inserting the data, redirect to the home page.
-    header('Location: index.php');
-    exit();
+    
 }
 ?>
 
